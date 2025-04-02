@@ -1,0 +1,27 @@
+﻿using AppointmentTracking.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+
+namespace AppointmentTracking.Infrastructure.Configurations;
+
+public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
+{
+    public void Configure(EntityTypeBuilder<Appointment> builder)
+    {
+        builder.HasKey(a => a.AppointmentId);
+        builder.Property(a => a.IsDeleted).HasDefaultValue(true);
+        builder.HasOne(a => a.Vehicle)
+            .WithMany(v => v.Appointments)
+            .HasForeignKey(a => a.VehicleId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(a => a.Instructor)
+            .WithMany(i => i.Appointments)
+            .HasForeignKey(a => a.InstructorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(a => a.Candidate)
+            .WithMany(c => c.Appointments)
+            .HasForeignKey(a => a.CandidateId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}

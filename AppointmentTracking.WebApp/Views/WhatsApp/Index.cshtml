@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "WhatsApp Mesaj Gönder";
+}
+
+<h2>@ViewBag.Message</h2>
+
+<form asp-action="SendMessage" method="post">
+    <div>
+        <label for="message">Mesaj:</label>
+        <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit">Mesaj Gönder</button>
+</form>

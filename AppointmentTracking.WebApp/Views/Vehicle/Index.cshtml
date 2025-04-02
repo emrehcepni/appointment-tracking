@@ -1,0 +1,254 @@
+﻿@model List<AppointmentTracking.Domain.Entities.Vehicle>
+
+@*Menü Bar*@
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar show">
+            <div class="position-sticky">
+                <div class="text-center mb-3">
+                    <h3>Direksiyon Takip</h3>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Randevu" ? "active" : "")" href="/Appointment">
+                            <i class="bi bi-calendar-event"></i> Randevu
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Adaylar" ? "active" : "")" href="/Candidate">
+                            <i class="bi bi-person"></i> Adaylar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Araçlar" ? "active" : "")" href="/Vehicle">
+                            <i class="bi bi-car-front"></i> Araçlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Eğitmenler" ? "active" : "")" href="/Instructor">
+                            <i class="bi bi-person-video2"></i> Eğitmenler
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Account/Logout">
+                            <i class="bi bi-box-arrow-right"></i> Çıkış
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2>Araç Listesi</h2>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-list"></i> Menüyü Kapat/Aç
+                    </button>
+                </div>
+            </div>
+
+
+
+<!-- Hata mesajlarını göster -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="row">
+    <!-- Araç Ekleme ve Güncelleme Formu -->
+    <div class="col-md-6">
+        <h3>Araç Ekle / Güncelle</h3>
+        <form asp-action="AddOrUpdate" method="post" class="mb-3" onsubmit="setAccessibleValue()">
+            <input type="hidden" id="VehicleId" name="VehicleId" value="0" />
+
+            <div class="form-group">
+                <label for="Make">Marka</label>
+                <input type="text" class="form-control" id="Make" name="Make" required>
+            </div>
+            <div class="form-group">
+                <label for="Brand">Model</label>
+                <input type="text" class="form-control" id="Brand" name="Brand" required>
+            </div>
+            <div class="form-group">
+                <label for="ModelYear">Model Yılı</label>
+                <input type="number" class="form-control" id="ModelYear" name="ModelYear" required>
+            </div>
+            <div class="form-group">
+                <label for="LicensePlate">Plaka</label>
+                <input type="text" class="form-control" id="LicensePlate" name="LicensePlate" required>
+            </div>
+            <div class="form-group">
+                <label for="InspectionDate">Araç Muayenesi</label>
+                <input type="date" class="form-control" id="InspectionDate" name="InspectionDate" value="@ViewBag.InspectionDate">
+            </div>
+            <div class="form-group">
+                <label for="Accessible">Erişilebilir</label>
+                <input type="checkbox" id="Accessible" name="Accessible" value="true">
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </form>
+    </div>
+
+    <!-- Arama Formu -->
+    <div class="col-md-6">
+        <h3>Araçları Filtrele</h3>
+        <form asp-action="Search" method="get" class="mb-3">
+            <div class="form-group">
+                <label for="MakeSearch">Marka</label>
+                <input type="text" class="form-control" id="MakeSearch" name="make" value="@ViewBag.Make">
+            </div>
+            <div class="form-group">
+                <label for="BrandSearch">Model</label>
+                <input type="text" class="form-control" id="BrandSearch" name="brand" value="@ViewBag.Brand">
+            </div>
+            <div class="form-group">
+                <label for="ModelYearSearch">Model Yılı</label>
+                <input type="number" class="form-control" id="ModelYearSearch" name="modelYear" value="@ViewBag.ModelYear">
+            </div>
+            <div class="form-group">
+                <label for="LicensePlateSearch">Plaka</label>
+                <input type="text" class="form-control" id="LicensePlateSearch" name="licensePlate" value="@ViewBag.LicensePlate">
+            </div>
+            <div class="form-group">
+                <label for="InspectionDate">Araç Muayenesi</label>
+                <input type="date" class="form-control" id="InspectionDate" name="InspectionDate" value="@ViewBag.InspectionDate">
+            </div>
+            <div class="form-group">
+                <label for="AccessibleSearch">Erişilebilir</label>
+                <input type="checkbox" id="AccessibleSearch" name="accessible" value="true" @(ViewBag.Accessible == true ? "checked" : "")>
+            </div>
+            <button type="submit" class="btn btn-primary">Ara</button>
+        </form>
+    </div>
+</div>
+
+<!-- Araç Listesi Tablosu -->
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Marka</th>
+            <th>Model</th>
+            <th>Model Yılı</th>
+            <th>Plaka</th>
+            <th>Muayene Tarihi</th>
+            <th>Erişilebilir</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vehicle in Model)
+        {
+            // inspectionDate'ı DateTime olarak kullanacağız
+            string inspectionClass = (vehicle.InspectionDate <= DateTime.Today.AddDays(10)) ? "inspection-warning" : "";
+            <tr class="@inspectionClass">
+                <td>@vehicle.Make</td>
+                <td>@vehicle.Brand</td>
+                <td>@vehicle.ModelYear</td>
+                <td>@vehicle.LicensePlate</td>
+                <td>@vehicle.InspectionDate?.ToString("yyyy-MM-dd")</td>
+                <td>@(vehicle.Accessible ? "Evet" : "Hayır")</td>
+                <td>
+                    <button onclick="editVehicle(@vehicle.VehicleId, '@vehicle.Make', '@vehicle.Brand', @vehicle.ModelYear, '@vehicle.LicensePlate', '@(vehicle.InspectionDate == null ? "" : vehicle.InspectionDate.Value.ToString("yyyy-MM-dd"))' ,'@(vehicle.Accessible ? "true" : "false")')" class="btn btn-warning">Düzenle</button>
+
+                    <form asp-action="Delete" method="post" onsubmit="return confirm('Bu aracı silmek istediğinizden emin misiniz?');">
+                        <input type="hidden" name="selectedVehicleId" value="@vehicle.VehicleId" />
+                        <button type="submit" class="btn btn-danger">Sil</button>
+                    </form>
+                </td>
+                <td>
+                                <a asp-controller="VehicleDetail" asp-action="Index" asp-route-vehicleId="@vehicle.VehicleId" class="btn btn-info">
+                                    Detay Ekle
+                                </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+<!-- Sayfalama -->
+<div>
+    <ul class="pagination">
+        @for (var i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, make = ViewBag.Make, brand = ViewBag.Brand, licensePlate = ViewBag.LicensePlate, modelYear = ViewBag.ModelYear, accessible = ViewBag.Accessible })">
+                    @i
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+<script>
+                function editVehicle(id, make, brand, modelYear, licensePlate, inspectionDate, accessible)
+                {
+                    document.getElementById("VehicleId").value = id;
+                    document.getElementById("Make").value = make;
+                    document.getElementById("Brand").value = brand;
+                    document.getElementById("ModelYear").value = modelYear;
+                    document.getElementById("LicensePlate").value = licensePlate;
+                    document.getElementById("InspectionDate").value = inspectionDate;
+                   setAccessibleValue(accessible);
+                }
+            </script>
+
+<script>
+                function setAccessibleValue(accessible) 
+                {
+                    // Accessible checkbox'ı ayarla
+                   
+                    if (accessible === true || accessible === "true") 
+                    {
+                        document.getElementById("Accessible").checked = true;
+                    } 
+                    else 
+                    {
+                        document.getElementById("Accessible").checked = false;
+                    }
+                }
+</script>
+
+
+        </main>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="~/css/menu.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('main'); // İçerik alanı
+
+        if (sidebarToggle && sidebar && mainContent) {
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('show');
+
+                // Menü kapalıysa içerik tam ekran olsun, açıksa eski haline dönsün
+                if (sidebar.classList.contains('show')) {
+                    mainContent.style.marginLeft = '250px';
+                    mainContent.style.width = 'calc(100% - 250px)';
+                } else {
+                    mainContent.style.marginLeft = '0';
+                    mainContent.style.width = '100%';
+                }
+            });
+        } else {
+            console.error('sidebarToggle, sidebar veya main elementi bulunamadı.');
+        }
+    });
+</script>

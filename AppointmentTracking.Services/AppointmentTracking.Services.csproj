@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AppointmentTracking.CustomExtensions\AppointmentTracking.CustomExtensions.csproj" />
+    <ProjectReference Include="..\AppointmentTracking.Domain\AppointmentTracking.Domain.csproj" />
+    <ProjectReference Include="..\AppointmentTracking.Infrastructure\AppointmentTracking.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

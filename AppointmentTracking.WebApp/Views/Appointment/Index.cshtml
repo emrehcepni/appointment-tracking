@@ -1,0 +1,397 @@
+﻿@model List<AppointmentTracking.Domain.Entities.Appointment>
+<div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</div>
+
+@*Menü Bar*@
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar show">
+            <div class="position-sticky">
+                <div class="text-center mb-3">
+                    <h3>Direksiyon Takip</h3>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Randevu" ? "active" : "")" href="/Appointment">
+                            <i class="bi bi-calendar-event"></i> Randevu
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Adaylar" ? "active" : "")" href="/Candidate">
+                            <i class="bi bi-person"></i> Adaylar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Araçlar" ? "active" : "")" href="/Vehicle">
+                            <i class="bi bi-car-front"></i> Araçlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Eğitmenler" ? "active" : "")" href="/Instructor">
+                            <i class="bi bi-person-video2"></i> Eğitmenler
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Account/Logout">
+                            <i class="bi bi-box-arrow-right"></i> Çıkış
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2>Randevu Takvimi</h2>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-list"></i> Menüyü Kapat/Aç
+                    </button>
+                </div>
+            </div>
+<!-- içerik -->
+@{
+    ViewBag.Title = "Randevu Takvimi";
+}
+
+<div class="container">
+    
+
+    <!-- 🟢 Ay, Hafta ve Eğitmen Seçimi -->
+    <div class="row">
+        <div class="col-md-3">
+            <label for="month">Ay Seç</label>
+            <select id="month" class="form-control">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="week">Hafta Seç</label>
+            <select id="week" class="form-control">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <option value="@i">@i. Hafta</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="instructorId">Hoca</label>
+            <select id="instructorId" class="form-control">
+                @foreach (var instructor in ViewBag.Instructors)
+                {
+                    <option value="@instructor.InstructorId">@instructor.FirstName @instructor.LastName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button id="filterBtn" class="btn btn-primary" style="margin-top: 25px;">Filtrele</button>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Saat</th>
+                    <th>Pazartesi</th>
+                    <th>Salı</th>
+                    <th>Çarşamba</th>
+                    <th>Perşembe</th>
+                    <th>Cuma</th>
+                    <th>Cumartesi</th>
+                    <th>Pazar</th>
+                </tr>
+            </thead>
+            <tbody id="appointmentTable"></tbody>
+        </table>
+    </div>
+
+    <div id="appointmentModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Randevu Ekle/Düzenle</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="selectedDate" />
+                    <input type="hidden" id="selectedTime" />
+
+                    <label>Aday Seç:</label>
+                    <select id="candidateId" class="form-control">
+                        @foreach (var candidate in ViewBag.Candidates)
+                        {
+                            <option value="@candidate.CandidateId">@candidate.FirstName @candidate.LastName</option>
+                        }
+                    </select>
+
+                    <label for="vehicleId">Araç Seçimi</label>
+                    <select id="vehicleId" class="form-control">
+                        <option value="">Araç Seçiniz</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveAppointmentBtn" class="btn btn-success">Kaydet</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal açılınca araçları yükle
+        $('#appointmentModal').on('show.bs.modal', function () {
+            loadAvailableVehicles();
+        });
+
+        // Araçları yükleme fonksiyonu
+        function loadAvailableVehicles() {
+            $.ajax({
+                url: "/Appointment/GetAllVehicles",
+                type: "GET",
+                success: function (vehicles) {
+                    var vehicleDropdown = $("#vehicleId");
+                    vehicleDropdown.empty();
+                    vehicleDropdown.append('<option value="">Araç Seçiniz</option>');
+
+                    $.each(vehicles, function (index, vehicle) {
+                        vehicleDropdown.append('<option value="' + vehicle.vehicleId + '">' + vehicle.licensePlate + '</option>');
+                    });
+                },
+                error: function () {
+                    alert("Araçlar yüklenirken hata oluştu.");
+                }
+            });
+        }
+
+        // Randevuyu kaydet
+        $("#saveAppointmentBtn").click(function () {
+        var selectedDate = $("#selectedDate").val();
+        var selectedTime = $("#selectedTime").val();
+        var candidateId = $("#candidateId").val();
+        var vehicleId = $("#vehicleId").val();
+
+        if (!candidateId || !vehicleId || !selectedDate || !selectedTime) {
+            alert("Lütfen tüm alanları doldurun!");
+            return;
+        }
+
+        // StartTime ve EndTime hesaplama
+        var startTime = new Date(selectedDate + "T" + selectedTime);
+        var endTime = new Date(startTime);
+        endTime.setHours(endTime.getHours() + 1); // 1 saat ekle
+
+        var data = {
+            instructorId: 1, // Gerekirse instructorId'yi dinamik olarak ayarlayın
+            candidateId: candidateId,
+            vehicleId: vehicleId,
+            startTime: startTime.toISOString(),
+            endTime: endTime.toISOString()
+        };
+
+        $.ajax({
+            url: "/Appointment/SaveAppointment",
+            type: "POST",
+            data: data,
+            success: function (response) {
+                if (response.success) {
+                    $("#appointmentModal").modal("hide");
+                    alert("Randevu başarıyla kaydedildi!");
+                    $("#filterBtn").click();
+                } else {
+                    alert(response.message || "Randevu kaydedilirken hata oluştu.");
+                }
+            },
+            error: function () {
+                alert("Randevu kaydedilirken hata oluştu.");
+            }
+        });
+        });
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+             function loadAvailableVehicles() {
+            $.ajax({
+                url: "/Appointment/GetAllVehicles",
+                type: "GET",
+                success: function (vehicles) {
+                    var vehicleDropdown = $("#vehicleId");
+                    vehicleDropdown.empty();
+                    vehicleDropdown.append('<option value="">Araç Seçiniz</option>');
+
+                    $.each(vehicles, function (index, vehicle) {
+                        vehicleDropdown.append('<option value="' + vehicle.vehicleId + '">' + vehicle.licensePlate + '</option>');
+                    });
+                },
+                error: function () {
+                    alert("Araçlar yüklenirken hata oluştu.");
+                }
+            });
+        }
+
+            $("#filterBtn").click(function () {
+                var month = $("#month").val();
+                var week = $("#week").val();
+                var instructorId = $("#instructorId").val();
+
+                $.ajax({
+                    url: '/Appointment/GetAppointments',
+                    type: 'GET',
+                    data: { month: month, week: week, instructorId: instructorId },
+                    success: function (appointments) {
+                        generateTable(appointments);
+                    },
+                    error: function () {
+                        alert("Randevular yüklenirken hata oluştu.");
+                    }
+                });
+            });
+
+            function generateTable(appointments) {
+                var tableBody = $("#appointmentTable");
+                tableBody.empty();
+                var hours = [...Array(10).keys()].map(i => i + 9);
+                var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+                hours.forEach(function (hour) {
+                    var row = "<tr><td>" + hour + ":00</td>";
+
+                    days.forEach(function (day) {
+                        var appointment = appointments.find(a => new Date(a.startTime).toLocaleDateString('en-US', { weekday: 'long' }) === day && new Date(a.startTime).getHours() === hour);
+                        if (appointment) {
+                            row += `<td class="appointment-cell bg-warning text-white" data-time="${appointment.startTime}" data-candidate="${appointment.candidateId}">
+                                        <b>${appointment.candidate}</b><br />
+                                        ${appointment.vehicle}
+                                    </td>`;
+                        } else {
+                            row += `<td class="appointment-cell" data-time="${hour}"><span class="text-muted">Boş</span></td>`;
+                        }
+                    });
+
+                    row += "</tr>";
+                    tableBody.append(row);
+                });
+            }
+
+            $(document).on('click', '.appointment-cell', function () {
+                var selectedTime = $(this).data("time");
+                $("#selectedTime").val(selectedTime);
+                loadAvailableVehicles(selectedTime);
+                $("#appointmentModal").modal("show");
+                    $('#appointmentModal').on('show.bs.modal', function () {
+            loadAvailableVehicles();
+        });
+            });
+
+            // $("#saveAppointmentBtn").click(function () {
+            //     var data = {
+            //         instructorId: $("#instructorId").val(),
+            //         startTime: $("#selectedTime").val(),
+            //         candidateId: $("#candidateId").val(),
+            //         vehiclePlate: $("#vehiclePlate").val()
+            //     };
+
+                // $.ajax({
+                //     url: "/Appointment/SaveAppointment",
+                //     type: "POST",
+                //     data: data,
+                //     success: function (response) {
+                //         if (response.success) {
+                //             $("#appointmentModal").modal("hide");
+                //             alert("Randevu başarıyla kaydedildi!");
+                //             $("#filterBtn").click();
+                //         } else {
+                //             alert(response.message || "Randevu kaydedilirken hata oluştu.");
+                //         }
+                //     },
+                //     error: function () {
+                //         alert("Randevu kaydedilirken hata oluştu.");
+                //     }
+                // });
+
+            // });
+                 $("#saveAppointmentBtn").click(function () {
+            var selectedTime = $("#selectedTime").val();
+            var candidateId = $("#candidateId").val();
+            var vehicleId = $("#vehicleId").val();
+
+            if (!candidateId || !vehicleId || !selectedTime) {
+                alert("Lütfen tüm alanları doldurun!");
+                return;
+            }
+
+            var data = {
+                instructorId: 1, // Gerekirse instructorId'yi dinamik olarak ayarlayın
+                candidateId: candidateId,
+                vehicleId: vehicleId,
+                startTime: selectedTime
+            };
+
+            $.ajax({
+                url: "/Appointment/SaveAppointment",
+                type: "POST",
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        $("#appointmentModal").modal("hide");
+                        alert("Randevu başarıyla kaydedildi!");
+                        $("#filterBtn").click();
+                    } else {
+                        alert(response.message || "Randevu kaydedilirken hata oluştu.");
+                    }
+                },
+                error: function () {
+                    alert("Randevu kaydedilirken hata oluştu.");
+                }
+            });
+        });
+      
+    
+    </script>
+</div>
+
+        </main>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="~/css/menu.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('main'); // İçerik alanı
+
+        if (sidebarToggle && sidebar && mainContent) {
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('show');
+
+                // Menü kapalıysa içerik tam ekran olsun, açıksa eski haline dönsün
+                if (sidebar.classList.contains('show')) {
+                    mainContent.style.marginLeft = '250px';
+                    mainContent.style.width = 'calc(100% - 250px)';
+                } else {
+                    mainContent.style.marginLeft = '0';
+                    mainContent.style.width = '100%';
+                }
+            });
+        } else {
+            console.error('sidebarToggle, sidebar veya main elementi bulunamadı.');
+        }
+    });
+</script>

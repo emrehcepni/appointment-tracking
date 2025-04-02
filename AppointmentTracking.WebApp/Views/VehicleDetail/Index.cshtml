@@ -1,0 +1,178 @@
+﻿@model AppointmentTracking.Domain.Entities.VehicleDetails
+@*Menü Bar*@
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar show">
+            <div class="position-sticky">
+                <div class="text-center mb-3">
+                    <h3>Direksiyon Takip</h3>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Randevu" ? "active" : "")" href="/Appointment">
+                            <i class="bi bi-calendar-event"></i> Randevu
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Adaylar" ? "active" : "")" href="/Candidate">
+                            <i class="bi bi-person"></i> Adaylar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Araçlar" ? "active" : "")" href="/Vehicle">
+                            <i class="bi bi-car-front"></i> Araçlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Eğitmenler" ? "active" : "")" href="/Instructor">
+                            <i class="bi bi-person-video2"></i> Eğitmenler
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Account/Logout">
+                            <i class="bi bi-box-arrow-right"></i> Çıkış
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2>Araç Detayları</h2>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-list"></i> Menüyü Kapat/Aç
+                    </button>
+                </div>
+            </div>
+
+
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="VehicleDetailId" />
+    <input type="hidden" asp-for="VehicleId" />
+
+    <div class="form-group">
+        <label for="PlateNumber">Plaka Numarası</label>
+        <input type="text" class="form-control" id="PlateNumber" name="PlateNumber" asp-for="PlateNumber" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="Color">Renk</label>
+        <input type="text" class="form-control" id="Color" name="Color" asp-for="Color" required>
+    </div>
+
+    <div class="form-group">
+        <label for="TransmissionType">Vites Tipi</label>
+        <select class="form-control" id="TransmissionType" name="TransmissionType" asp-for="TransmissionType" required>
+            <option>Manuel</option>
+            <option>Otomatik</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="TireSize">Lastik Ebatları</label>
+        <input type="text" class="form-control" id="TireSize" name="TireSize" asp-for="TireSize" required>
+    </div>
+
+    <div class="form-group">
+        <label for="TireType">Lastik Tipi</label>
+        <select class="form-control" id="TireType" name="TireType" asp-for="TireType" required>
+            <option>4 Mevsim</option>
+            <option>Kışlık</option>
+            <option>Yazlık</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="TireChangeDate">Lastik Değişim Tarihi</label>
+        <input type="date" class="form-control" id="TireChangeDate" name="TireChangeDate" asp-for="TireChangeDate">
+    </div>
+
+    <div class="form-group">
+        <label for="TireChangeKilometer">Lastik Değişim KM</label>
+        <input type="number" class="form-control" id="TireChangeKilometer" name="TireChangeKilometer" asp-for="TireChangeKilometer">
+    </div>
+
+    <div class="form-group">
+        <label for="EngineVolume">Motor Hacmi (Litre)</label>
+        <input type="number" step="0.1" class="form-control" id="EngineVolume" name="EngineVolume" asp-for="EngineVolume" required>
+    </div>
+
+    <div class="form-group">
+        <label for="EnginePower">Motor Gücü (Beygir)</label>
+        <input type="number" class="form-control" id="EnginePower" name="EnginePower" asp-for="EnginePower" required>
+    </div>
+
+    <div class="form-group">
+        <label for="FuelType">Yakıt Tipi</label>
+        <select class="form-control" id="FuelType" name="FuelType" asp-for="FuelType" required>
+            <option>Dizel</option>
+            <option>Benzin</option>
+            <option>Elektrik</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="ChassisNumber">Şasi Numarası</label>
+        <input type="text" class="form-control" id="ChassisNumber" name="ChassisNumber" asp-for="ChassisNumber" required>
+    </div>
+
+    <div class="form-group">
+        <label for="InspectionDate">Araç Muayene Tarihi</label>
+        <input type="date" class="form-control" id="InspectionDate" name="InspectionDate" asp-for="InspectionDate" required>
+    </div>
+
+    <div class="form-group">
+        <label for="ExhaustInspectionDate">Egzoz Muayene Tarihi</label>
+        <input type="date" class="form-control" id="ExhaustInspectionDate" name="ExhaustInspectionDate" asp-for="ExhaustInspectionDate" required>
+    </div>
+
+    <div class="form-group">
+        <label for="InsuranceDate">Kasko Tarihi</label>
+        <input type="date" class="form-control" id="InsuranceDate" name="InsuranceDate" asp-for="InsuranceDate" value="@Model.InsuranceDate?.ToString("yyyy-MM-dd")">
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Açıklama</label>
+        <textarea class="form-control" id="Description" name="Description" asp-for="Description"></textarea>
+    </div>
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-controller="Vehicle" asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
+
+        </main>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="~/css/menu.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('main'); // İçerik alanı
+
+        if (sidebarToggle && sidebar && mainContent) {
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('show');
+
+                // Menü kapalıysa içerik tam ekran olsun, açıksa eski haline dönsün
+                if (sidebar.classList.contains('show')) {
+                    mainContent.style.marginLeft = '250px';
+                    mainContent.style.width = 'calc(100% - 250px)';
+                } else {
+                    mainContent.style.marginLeft = '0';
+                    mainContent.style.width = '100%';
+                }
+            });
+        } else {
+            console.error('sidebarToggle, sidebar veya main elementi bulunamadı.');
+        }
+    });
+</script>
