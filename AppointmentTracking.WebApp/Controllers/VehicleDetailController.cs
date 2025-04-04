@@ -43,7 +43,7 @@ public class VehicleDetailController : Controller
         if (vehicleDetail == null)
         {
             // Eğer detay bilgisi yoksa, yeni bir form oluştur
-            vehicleDetail = new VehicleDetails
+            vehicleDetail = new VehicleDetail
             {
                 VehicleId = vehicle.VehicleId,
                 PlateNumber = vehicle.LicensePlate // Plaka otomatik atanıyor
@@ -55,7 +55,7 @@ public class VehicleDetailController : Controller
 
 
     [HttpPost]
-    public IActionResult Create(VehicleDetails vehicleDetail)
+    public IActionResult Create(VehicleDetail vehicleDetail)
     {
         
 

@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AppointmentTracking.CustomExtensions\AppointmentTracking.CustomExtensions.csproj" />
     <ProjectReference Include="..\AppointmentTracking.Services\AppointmentTracking.Services.csproj" />
-    <ProjectReference Include="..\AppointmentTracking.Infrastructure\AppointmentTracking.Infrastructure.csproj" />
     <ProjectReference Include="..\AppointmentTracking.Domain\AppointmentTracking.Domain.csproj" />
   </ItemGroup>
 

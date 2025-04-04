@@ -3,49 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AppointmentTracking.Domain.Entities;
 using AppointmentTracking.CustomExtensions;
+using AppointmentTracking.Services.Interfaces;
+using AppointmentTracking.Services;
 
 namespace AppointmentTracking.Controllers;
 
 public class AppointmentController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly IAppointmentService _appointmentService;
+    private readonly ICandidateService _candidateService;
 
-    public AppointmentController(AppDbContext context)
+    public AppointmentController(IAppointmentService appointmentService, ICandidateService candidateService)
     {
-        _context = context;
+        _appointmentService = appointmentService;
+        _candidateService = candidateService;
     }
 
-    public IActionResult Index(int? month, int? week, int? instructorId)
+    public async Task<IActionResult> Index(int? month, int? week, int? instructorId)
     {
         ViewBag.ActiveMenuItem = "Randevu";
-        ViewBag.Instructors = _context.Instructors.ToList();
-        ViewBag.Candidates = _context.Candidates.ToList();
+        ViewBag.Candidates = await _candidateService.GetAllCandidates();
+        ViewBag.Instructors = await _appointmentService.Instructors.ToList();
 
-        var appointments = _context.Appointments
-            .Include(a => a.Instructor)
-            .Include(a => a.Candidate)
-            .Include(a => a.Vehicle)
-            .AsQueryable(); // Bu, IQueryable türüyle devam etmenizi sağlar
-
-        if (month.HasValue)
-        {
-            appointments = appointments.Where(a => a.StartTime.Month == month.Value);
-        }
-
-        if (week.HasValue)
-        {
-            var startOfWeek = new DateTime().GetWeekStartDate(DateTime.Now.Year, month.Value, 1);
-            var endOfWeek = startOfWeek.AddDays(6);
-            appointments = appointments.Where(a => a.StartTime.Date >= startOfWeek && a.StartTime.Date <= endOfWeek);
-        }
-
-        if (instructorId.HasValue)
-        {
-            appointments = appointments.Where(a => a.InstructorId == instructorId.Value);
-        }
-
-        var model = appointments.ToList(); // IQueryable'dan List'e dönüştürme
-        return View(model);
+        var appointments = await _appointmentService.GetAppointments(month, week, instructorId);
+        return View(appointments);
     }
 
     public JsonResult GetAvailableCandidates(DateTime startTime)

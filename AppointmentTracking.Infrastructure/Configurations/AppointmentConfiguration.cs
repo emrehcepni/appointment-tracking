@@ -1,6 +1,7 @@
 ﻿using AppointmentTracking.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using AppointmentTracking.Domain.Constants;
 
 namespace AppointmentTracking.Infrastructure.Configurations;
 
@@ -8,6 +9,8 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
 {
     public void Configure(EntityTypeBuilder<Appointment> builder)
     {
+        builder.ToTable(TableNames.Appointments);
+
         builder.HasKey(a => a.AppointmentId);
         builder.Property(a => a.IsDeleted).HasDefaultValue(true);
         builder.HasOne(a => a.Vehicle)

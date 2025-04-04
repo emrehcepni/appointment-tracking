@@ -2,7 +2,7 @@
 
 namespace AppointmentTracking.Domain.Entities;
 
-public class Users : Entity<Guid>
+public class User : Entity<Guid>
 {
     [Key]    
     public int UserId {  get; set; }

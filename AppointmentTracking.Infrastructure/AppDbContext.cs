@@ -14,8 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
-    public DbSet<VehicleDetails> VehicleDetails { get; set; }
-    public DbSet<Users> Users { get; set; }
+    public DbSet<VehicleDetail> VehicleDetails { get; set; }
+    public DbSet<User> Users { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

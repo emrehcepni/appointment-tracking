@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppointmentTracking.Domain.Entities;
 
-public class VehicleDetails : Entity<Guid>
+public class VehicleDetail : Entity<Guid>
 {
 
     [Key]

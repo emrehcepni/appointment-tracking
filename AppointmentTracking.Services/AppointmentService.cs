@@ -2,7 +2,6 @@
 using AppointmentTracking.Domain.Entities;
 using AppointmentTracking.Infrastructure.Repositories.Interfaces;
 using AppointmentTracking.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentTracking.Services;
 
@@ -15,18 +14,12 @@ public class AppointmentService : IAppointmentService
         _appointmentRepository = appointmentRepository;
     }
 
-    public async Task<List<Appointment>> GetAppointments()
+    public async Task<List<Appointment>> GetAppointments(int? month, int? week, int? instructorId)
     {
-        var appointments = _context.Appointments
-            .Include(a => a.Instructor)
-            .Include(a => a.Candidate)
-            .Include(a => a.Vehicle)
-            .AsQueryable(); // Bu, IQueryable türüyle devam etmenizi sağlar
+        var appointments = await _appointmentRepository.GetAppointments();
 
         if (month.HasValue)
-        {
             appointments = appointments.Where(a => a.StartTime.Month == month.Value);
-        }
 
         if (week.HasValue)
         {
@@ -36,11 +29,9 @@ public class AppointmentService : IAppointmentService
         }
 
         if (instructorId.HasValue)
-        {
             appointments = appointments.Where(a => a.InstructorId == instructorId.Value);
-        }
 
-        var result = appointments.ToList(); // IQueryable'dan List'e dönüştürme
+        var result = appointments.ToList();
         return result;
     }
 }

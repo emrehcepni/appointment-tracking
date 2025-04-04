@@ -15,7 +15,7 @@ public class Vehicle : Entity<Guid>
     public int ModelYear { get; set; }
     [Required]
     public string LicensePlate { get; set; }
-    public VehicleDetails? VehicleDetails { get; set; }
+    public VehicleDetail? VehicleDetails { get; set; }
     public DateTime? InspectionDate {  get; set; }
     public List<Appointment>? Appointments { get; set; }
     public bool IsDeleted { get; set; }
