@@ -26,7 +26,11 @@ public class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=DESKTOP-BBG06F2;Database=DireksiyonTakipDb;Trusted_Connection=True; TrustServerCertificate=True;")
-            .LogTo(Console.WriteLine, LogLevel.Information);
+        optionsBuilder.UseSqlServer(@"Server=104.247.167.18\MSSQLSERVER2019;User Id=knowz5cj6spr_AppointmentTracking;Password=AppointmentTracking123;Database=knowz5cj6spr_AppointmentTracking;TrustServerCertificate=True;",
+        sqlOptions =>
+        {
+            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "dbo");
+        })
+        .LogTo(Console.WriteLine, LogLevel.Information);
     }
 }

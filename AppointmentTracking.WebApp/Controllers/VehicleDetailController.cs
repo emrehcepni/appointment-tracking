@@ -17,7 +17,7 @@ public class VehicleDetailController : Controller
     {
         var vehicleDetail = _context.VehicleDetails
             .Include(vd => vd.Vehicle) // Araç bilgilerini çekiyoruz
-            .FirstOrDefault(vd => vd.VehicleId == id);
+            .FirstOrDefault(vd => vd.Id == Guid.Empty); // id
 
         if (vehicleDetail == null)
         {
@@ -29,7 +29,7 @@ public class VehicleDetailController : Controller
 
     public IActionResult Index(int vehicleId)
     {
-        var vehicle = _context.Vehicles.FirstOrDefault(v => v.VehicleId == vehicleId);
+        var vehicle = _context.Vehicles.FirstOrDefault(v => v.Id == Guid.Empty); // vehicleId
 
         if (vehicle == null)
         {
@@ -38,14 +38,14 @@ public class VehicleDetailController : Controller
 
         // Aracın detay bilgisi var mı kontrol et
         var vehicleDetail = _context.VehicleDetails
-            .FirstOrDefault(vd => vd.VehicleId == vehicleId);
+            .FirstOrDefault(vd => vd.Id == Guid.Empty); // vehicleId
 
         if (vehicleDetail == null)
         {
             // Eğer detay bilgisi yoksa, yeni bir form oluştur
             vehicleDetail = new VehicleDetail
             {
-                VehicleId = vehicle.VehicleId,
+                VehicleId = vehicle.Id,
                 PlateNumber = vehicle.LicensePlate // Plaka otomatik atanıyor
             };
         }

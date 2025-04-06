@@ -16,6 +16,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
+builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
 
 #endregion
 
@@ -24,6 +25,7 @@ builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<ICandidateService, CandidateService>();
+builder.Services.AddScoped<IInstructorService, InstructorService>();
 #endregion
 
 var app = builder.Build();

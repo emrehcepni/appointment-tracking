@@ -19,17 +19,20 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    CandidateId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LessonsHour = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Candidates", x => x.CandidateId);
+                    table.PrimaryKey("PK_Candidates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,17 +40,20 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    InstructorId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LicanceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Instructors", x => x.InstructorId);
+                    table.PrimaryKey("PK_Instructors", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,15 +61,18 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    LessonId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     lessonDateTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lessons", x => x.LessonId);
+                    table.PrimaryKey("PK_Lessons", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,19 +80,22 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     userName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     firstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     lastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     userType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,31 +103,34 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    AppointmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InstructorId = table.Column<int>(type: "int", nullable: false),
-                    CandidateId = table.Column<int>(type: "int", nullable: false),
-                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CandidateId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointments", x => x.AppointmentId);
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Appointments_Candidates_CandidateId",
                         column: x => x.CandidateId,
                         principalSchema: "dbo",
                         principalTable: "Candidates",
-                        principalColumn: "CandidateId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Appointments_Instructors_InstructorId",
                         column: x => x.InstructorId,
                         principalSchema: "dbo",
                         principalTable: "Instructors",
-                        principalColumn: "InstructorId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -124,26 +139,29 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    VehicleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Make = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Accessible = table.Column<bool>(type: "bit", nullable: false),
                     ModelYear = table.Column<int>(type: "int", nullable: false),
                     LicensePlate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InspectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AppointmentId = table.Column<int>(type: "int", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicles", x => x.VehicleId);
+                    table.PrimaryKey("PK_Vehicles", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Vehicles_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
                         principalSchema: "dbo",
                         principalTable: "Appointments",
-                        principalColumn: "AppointmentId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -151,9 +169,8 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    VehicleDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PlateNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransmissionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -169,17 +186,21 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     ExhaustInspectionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InsuranceDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleDetails", x => x.VehicleDetailId);
+                    table.PrimaryKey("PK_VehicleDetails", x => x.Id);
                     table.ForeignKey(
                         name: "FK_VehicleDetails_Vehicles_VehicleId",
                         column: x => x.VehicleId,
                         principalSchema: "dbo",
                         principalTable: "Vehicles",
-                        principalColumn: "VehicleId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -221,7 +242,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
                 column: "VehicleId",
                 principalSchema: "dbo",
                 principalTable: "Vehicles",
-                principalColumn: "VehicleId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
 

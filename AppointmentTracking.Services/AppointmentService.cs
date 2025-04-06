@@ -14,7 +14,7 @@ public class AppointmentService : IAppointmentService
         _appointmentRepository = appointmentRepository;
     }
 
-    public async Task<List<Appointment>> GetAppointments(int? month, int? week, int? instructorId)
+    public async Task<List<Appointment>> GetAppointments(int? month, int? week, Guid? instructorId)
     {
         var appointments = await _appointmentRepository.GetAppointments();
 

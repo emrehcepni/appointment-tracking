@@ -103,10 +103,10 @@
                             <td>@instructor.PhoneNumber</td>
                             <td>@instructor.LicanceType</td>
                             <td>
-                                <button onclick="editInstructor(@instructor.InstructorId, '@instructor.FirstName', '@instructor.LastName', '@instructor.PhoneNumber', '@instructor.LicanceType')" class="btn btn-warning">Düzenle</button>
+                                <button onclick="editInstructor(@instructor.Id, '@instructor.FirstName', '@instructor.LastName', '@instructor.PhoneNumber', '@instructor.LicanceType')" class="btn btn-warning">Düzenle</button>
 
                                 <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Bu eğitmeni silmek istediğinizden emin misiniz?');">
-                                    <input type="hidden" name="instructorId" value="@instructor.InstructorId" />
+                                    <input type="hidden" name="instructorId" value="@instructor.Id" />
                                     <button type="submit" class="btn btn-danger">Sil</button>
                                 </form>
                             </td>

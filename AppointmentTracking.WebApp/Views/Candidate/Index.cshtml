@@ -96,7 +96,7 @@
                             <td>@candidate.LessonsHour</td>
                             <td>
                                 <form asp-action="Delete" method="post" onsubmit="return confirm('Bu adayı silmek istediğinizden emin misiniz?');">
-                                    <input type="hidden" name="selectedCandidateId" value="@candidate.CandidateId" />
+                                    <input type="hidden" name="selectedCandidateId" value="@candidate.Id" />
                                     <button type="submit" class="btn btn-danger">Sil</button>
                                 </form>
                             </td>

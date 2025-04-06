@@ -11,7 +11,12 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
     {
         builder.ToTable(TableNames.Appointments);
 
-        builder.HasKey(a => a.AppointmentId);
+        builder.HasKey(a => a.Id);
+
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+
         builder.Property(a => a.IsDeleted).HasDefaultValue(true);
         builder.HasOne(a => a.Vehicle)
             .WithMany(v => v.Appointments)

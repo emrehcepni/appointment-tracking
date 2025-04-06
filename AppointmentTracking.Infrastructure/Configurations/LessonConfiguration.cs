@@ -11,7 +11,12 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
     {
         builder.ToTable(TableNames.Lessons);
 
-        builder.HasKey(l => l.LessonId);
+        builder.HasKey(l => l.Id);
+
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+
         builder.Property(l => l.IsDeleted).HasDefaultValue(true);
     }
 }

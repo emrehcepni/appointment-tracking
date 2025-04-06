@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentTracking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250322192130_InitialCreate")]
+    [Migration("20250406153447_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,22 +26,27 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Appointment", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Appointment", b =>
                 {
-                    b.Property<int>("AppointmentId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
+                    b.Property<Guid?>("CandidateId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CandidateId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InstructorId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("InstructorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -51,10 +56,16 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasKey("AppointmentId");
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("VehicleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CandidateId");
 
@@ -65,13 +76,18 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.ToTable("Appointments", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Candidate", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Candidate", b =>
                 {
-                    b.Property<int>("CandidateId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateId"));
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -93,18 +109,29 @@ namespace AppointmentTracking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CandidateId");
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Candidates", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Instructor", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Instructor", b =>
                 {
-                    b.Property<int>("InstructorId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstructorId"));
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -127,23 +154,40 @@ namespace AppointmentTracking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("InstructorId");
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Instructors", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Lesson", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Lesson", b =>
                 {
-                    b.Property<int>("LessonId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LessonId"));
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("lessonDateTime")
                         .IsRequired()
@@ -153,21 +197,31 @@ namespace AppointmentTracking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("LessonId");
+                    b.HasKey("Id");
 
                     b.ToTable("Lessons", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Users", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("email")
                         .IsRequired()
@@ -193,28 +247,33 @@ namespace AppointmentTracking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Vehicle", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Vehicle", b =>
                 {
-                    b.Property<int>("VehicleId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<bool>("Accessible")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("AppointmentId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AppointmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("InspectionDate")
                         .HasColumnType("datetime2");
@@ -235,20 +294,25 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.Property<int>("ModelYear")
                         .HasColumnType("int");
 
-                    b.HasKey("VehicleId");
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
 
                     b.ToTable("Vehicles", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.VehicleDetails", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.VehicleDetail", b =>
                 {
-                    b.Property<int>("VehicleDetailId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleDetailId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("ChassisNumber")
                         .IsRequired()
@@ -257,6 +321,12 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -307,10 +377,16 @@ namespace AppointmentTracking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasKey("VehicleDetailId");
+                    b.Property<Guid?>("UpdatedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("VehicleId")
                         .IsUnique();
@@ -318,25 +394,22 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.ToTable("VehicleDetails", "dbo");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Appointment", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Appointment", b =>
                 {
-                    b.HasOne("AppointmentTracking.Infrastructure.Candidate", "Candidate")
+                    b.HasOne("AppointmentTracking.Domain.Entities.Candidate", "Candidate")
                         .WithMany("Appointments")
                         .HasForeignKey("CandidateId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AppointmentTracking.Infrastructure.Instructor", "Instructor")
+                    b.HasOne("AppointmentTracking.Domain.Entities.Instructor", "Instructor")
                         .WithMany("Appointments")
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AppointmentTracking.Infrastructure.Vehicle", "Vehicle")
+                    b.HasOne("AppointmentTracking.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("Appointments")
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Candidate");
 
@@ -345,40 +418,40 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Vehicle", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Vehicle", b =>
                 {
-                    b.HasOne("AppointmentTracking.Infrastructure.Appointment", null)
+                    b.HasOne("AppointmentTracking.Domain.Entities.Appointment", null)
                         .WithMany("Vehicles")
                         .HasForeignKey("AppointmentId");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.VehicleDetails", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.VehicleDetail", b =>
                 {
-                    b.HasOne("AppointmentTracking.Infrastructure.Vehicle", "Vehicle")
+                    b.HasOne("AppointmentTracking.Domain.Entities.Vehicle", "Vehicle")
                         .WithOne("VehicleDetails")
-                        .HasForeignKey("AppointmentTracking.Infrastructure.VehicleDetails", "VehicleId")
+                        .HasForeignKey("AppointmentTracking.Domain.Entities.VehicleDetail", "VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Appointment", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Appointment", b =>
                 {
                     b.Navigation("Vehicles");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Candidate", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Candidate", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Instructor", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Instructor", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("AppointmentTracking.Infrastructure.Vehicle", b =>
+            modelBuilder.Entity("AppointmentTracking.Domain.Entities.Vehicle", b =>
                 {
                     b.Navigation("Appointments");
 

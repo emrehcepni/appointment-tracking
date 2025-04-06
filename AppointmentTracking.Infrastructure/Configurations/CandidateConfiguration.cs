@@ -11,7 +11,12 @@ public class CandidateConfiguration : IEntityTypeConfiguration<Candidate>
     {
         builder.ToTable(TableNames.Candidates);
 
-        builder.HasKey(c => c.CandidateId);
+        builder.HasKey(c => c.Id);
+
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+
         builder.Property(c => c.IsDeleted).HasDefaultValue(true);
     }
 }

@@ -37,7 +37,7 @@ public class CandidateController : Controller
 
         // Sayfalama yap
         var pagedCandidates = candidates
-            .OrderBy(c => c.CandidateId) // Sıralama yap
+            .OrderBy(c => c.Id) // Sıralama yap
             .Skip((pageNumber - 1) * pageSize) // Atlanacak kayıt sayısı
             .Take(pageSize) // Alınacak kayıt sayısı
             .ToList();
@@ -85,7 +85,7 @@ public class CandidateController : Controller
             TempData["ErrorMessage"] = "Lütfen silmek için bir aday seçin.";
             return RedirectToAction("Index");
         }
-        var candidate = await _context.Candidates.AsNoTracking().FirstOrDefaultAsync(item => item.CandidateId == selectedCandidateId);
+        var candidate = await _context.Candidates.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Guid.Empty); // selectedCandidateId
         if (candidate is null)
         {
             TempData["ErrorMessage"] = "Aday bulunamadı.";

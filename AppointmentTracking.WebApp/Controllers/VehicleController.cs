@@ -21,14 +21,14 @@ public class VehicleController : Controller
     {
         if (ModelState.IsValid)
         {
-            if (vehicle.VehicleId == 0)
+            if (vehicle.Id == Guid.Empty)
             {
                 await _context.Vehicles.AddAsync(vehicle); 
                 TempData["SuccessMessage"] = "Araç başarıyla kaydedildi.";
             }
             else
             {
-                var existingVehicle = await _context.Vehicles.FindAsync(vehicle.VehicleId);
+                var existingVehicle = await _context.Vehicles.FindAsync(vehicle.Id);
                 if (existingVehicle != null)
                 {
                     existingVehicle.Make = vehicle.Make;
@@ -78,7 +78,7 @@ public class VehicleController : Controller
         var vehicles = await _context.Vehicles
             .AsNoTracking()
             .Where(item => !item.IsDeleted)
-            .OrderBy(v => v.VehicleId)
+            .OrderBy(v => v.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(); 
@@ -122,7 +122,7 @@ public class VehicleController : Controller
 
         int totalCount = await vehicles.CountAsync(); // Asenkron sayım
         var pagedVehicles = await vehicles
-            .OrderBy(v => v.VehicleId)
+            .OrderByDescending(v => v.CreatedDate) // BUNA DİKKAT
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(); // **Burada listeye çeviriyoruz!**
@@ -206,7 +206,7 @@ public class VehicleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int selectedVehicleId)
     {
-        var vehicle = await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(item => item.VehicleId == selectedVehicleId);
+        var vehicle = await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Guid.Empty); // selectedVehicleId
         if (vehicle is null)
         {
             TempData["ErrorMessage"] = "Araç bulunamadı.";

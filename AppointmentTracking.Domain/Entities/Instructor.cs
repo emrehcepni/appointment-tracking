@@ -2,7 +2,6 @@
 
 public class Instructor : Entity<Guid>
 {
-    public int InstructorId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string PhoneNumber { get; set; }

@@ -158,15 +158,15 @@
                 <td>@vehicle.InspectionDate?.ToString("yyyy-MM-dd")</td>
                 <td>@(vehicle.Accessible ? "Evet" : "Hayır")</td>
                 <td>
-                    <button onclick="editVehicle(@vehicle.VehicleId, '@vehicle.Make', '@vehicle.Brand', @vehicle.ModelYear, '@vehicle.LicensePlate', '@(vehicle.InspectionDate == null ? "" : vehicle.InspectionDate.Value.ToString("yyyy-MM-dd"))' ,'@(vehicle.Accessible ? "true" : "false")')" class="btn btn-warning">Düzenle</button>
+                    <button onclick="editVehicle(@vehicle.Id, '@vehicle.Make', '@vehicle.Brand', @vehicle.ModelYear, '@vehicle.LicensePlate', '@(vehicle.InspectionDate == null ? "" : vehicle.InspectionDate.Value.ToString("yyyy-MM-dd"))' ,'@(vehicle.Accessible ? "true" : "false")')" class="btn btn-warning">Düzenle</button>
 
                     <form asp-action="Delete" method="post" onsubmit="return confirm('Bu aracı silmek istediğinizden emin misiniz?');">
-                        <input type="hidden" name="selectedVehicleId" value="@vehicle.VehicleId" />
+                        <input type="hidden" name="selectedVehicleId" value="@vehicle.Id" />
                         <button type="submit" class="btn btn-danger">Sil</button>
                     </form>
                 </td>
                 <td>
-                                <a asp-controller="VehicleDetail" asp-action="Index" asp-route-vehicleId="@vehicle.VehicleId" class="btn btn-info">
+                                <a asp-controller="VehicleDetail" asp-action="Index" asp-route-vehicleId="@vehicle.Id" class="btn btn-info">
                                     Detay Ekle
                                 </a>
                 </td>

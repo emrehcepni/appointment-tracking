@@ -11,7 +11,12 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
     {
         builder.ToTable(TableNames.Vehicles);
 
-        builder.HasKey(v => v.VehicleId);
+        builder.HasKey(v => v.Id);
+
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+
         builder.Property(v => v.IsDeleted).HasDefaultValue(true);
     }
 }

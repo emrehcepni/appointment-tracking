@@ -5,11 +5,8 @@ namespace AppointmentTracking.Domain.Entities;
 
 public class VehicleDetail : Entity<Guid>
 {
-
-    [Key]
-    public int VehicleDetailId { get; set; }
     [ForeignKey("Vehicle")]
-    public int VehicleId { get; set; }
+    public Guid VehicleId { get; set; }
     public string PlateNumber { get; set; }
     public Vehicle Vehicle { get; set; }
     

@@ -42,14 +42,14 @@ public class InstructorController : Controller
         {
             instructor.LicanceType = string.Join(",", LicanceType); // Çoklu seçimleri string'e çeviriyoruz
 
-            if (instructor.InstructorId == 0)
+            if (instructor.Id == Guid.Empty)
             {
                 _context.Instructors.Add(instructor);
                 TempData["SuccessMessage"] = "Eğitmen başarıyla eklendi.";
             }
             else
             {
-                var existingInstructor = _context.Instructors.Find(instructor.InstructorId);
+                var existingInstructor = _context.Instructors.Find(instructor.Id);
                 if (existingInstructor != null)
                 {
                     existingInstructor.FirstName = instructor.FirstName;

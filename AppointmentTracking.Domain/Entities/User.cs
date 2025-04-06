@@ -4,8 +4,6 @@ namespace AppointmentTracking.Domain.Entities;
 
 public class User : Entity<Guid>
 {
-    [Key]    
-    public int UserId {  get; set; }
     public string userName {  get; set; }
     public string password { get; set; }
     public string email { get; set; }

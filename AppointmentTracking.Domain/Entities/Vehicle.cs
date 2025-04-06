@@ -5,8 +5,6 @@ namespace AppointmentTracking.Domain.Entities;
 public class Vehicle : Entity<Guid>
 {
     [Required]
-    public int VehicleId { get; set; }
-    [Required]
     public string Make { get; set; }
     [Required]
     public string Brand { get; set; }
@@ -18,5 +16,4 @@ public class Vehicle : Entity<Guid>
     public VehicleDetail? VehicleDetails { get; set; }
     public DateTime? InspectionDate {  get; set; }
     public List<Appointment>? Appointments { get; set; }
-    public bool IsDeleted { get; set; }
 }

@@ -11,7 +11,12 @@ public class InstractorConfiguration : IEntityTypeConfiguration<Instructor>
     {
         builder.ToTable(TableNames.Instructors);
 
-        builder.HasKey(i => i.InstructorId);
+        builder.HasKey(i => i.Id);
+
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+
         builder.Property(i => i.IsDeleted).HasDefaultValue(true);
     }
 }
