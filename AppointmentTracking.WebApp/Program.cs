@@ -1,13 +1,23 @@
+using AppointmentTracking.Domain.Constants;
 using AppointmentTracking.Infrastructure;
 using AppointmentTracking.Infrastructure.Repositories;
 using AppointmentTracking.Infrastructure.Repositories.Interfaces;
 using AppointmentTracking.Services;
 using AppointmentTracking.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions =>
+        {
+            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "dbo");
+        }));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -19,7 +29,6 @@ builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
 
 #endregion
-
 
 #region Services
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AppointmentTracking.Domain.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace AppointmentTracking.Infrastructure;
 
@@ -22,15 +21,5 @@ public class AppDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("dbo");
         modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(@"Server=104.247.167.18\MSSQLSERVER2019;User Id=knowz5cj6spr_AppointmentTracking;Password=AppointmentTracking123;Database=knowz5cj6spr_AppointmentTracking;TrustServerCertificate=True;",
-        sqlOptions =>
-        {
-            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "dbo");
-        })
-        .LogTo(Console.WriteLine, LogLevel.Information);
     }
 }
