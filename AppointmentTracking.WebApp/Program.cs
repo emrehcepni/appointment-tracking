@@ -1,4 +1,3 @@
-using AppointmentTracking.Domain.Constants;
 using AppointmentTracking.Infrastructure;
 using AppointmentTracking.Infrastructure.Repositories;
 using AppointmentTracking.Infrastructure.Repositories.Interfaces;
