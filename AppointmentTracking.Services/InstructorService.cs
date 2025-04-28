@@ -1,5 +1,4 @@
 ﻿using AppointmentTracking.Domain.Entities;
-using AppointmentTracking.Infrastructure.Repositories;
 using AppointmentTracking.Infrastructure.Repositories.Interfaces;
 using AppointmentTracking.Services.Interfaces;
 
@@ -18,5 +17,31 @@ public class InstructorService : IInstructorService
     {
         var instructors = await _instructorRepository.WhereWithAsNoTrackingAsync(item => !item.IsDeleted);
         return instructors;
+    }
+    
+    public async Task<bool> DeleteInstructor(Guid instructorId)
+    {
+        try
+        {
+            await _instructorRepository.DeleteByIdAsync(instructorId, Guid.Empty);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<List<Instructor>> SearchInstructors(string searchString)
+    {
+        var instructors = await _instructorRepository.WhereWithAsNoTrackingAsync(i =>
+            !i.IsDeleted && (
+                i.FirstName.Contains(searchString) ||
+                i.LastName.Contains(searchString) ||
+                i.PhoneNumber.Contains(searchString) ||
+                i.LicanceType.Contains(searchString)
+            ));
+    
+        return instructors.ToList();
     }
 }

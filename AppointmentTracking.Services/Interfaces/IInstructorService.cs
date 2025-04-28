@@ -4,5 +4,7 @@ namespace AppointmentTracking.Services.Interfaces;
 
 public interface IInstructorService
 {
-    public Task<IEnumerable<Instructor>> GetAllInstructors();
+    Task<IEnumerable<Instructor>> GetAllInstructors();
+    Task<bool> DeleteInstructor(Guid instructorId);
+    Task<List<Instructor>> SearchInstructors(string searchString);
 }

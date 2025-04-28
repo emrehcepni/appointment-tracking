@@ -13,7 +13,7 @@ public interface IGenericRepository<TEntity, TPrimaryKey>
     Task RemoveAsync(TEntity entity);
     Task RemoveByIdAsync(TPrimaryKey id);
     Task DeleteAsync(TEntity entity);
-    Task DeleteByIdAsync(TPrimaryKey id, Guid userId);
+    Task<bool> DeleteByIdAsync(TPrimaryKey id, Guid userId);
     Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
     TEntity? FirstOrDefaultWithAsNoTracking(Expression<Func<TEntity, bool>> predicate);
     Task<TEntity?> FirstOrDefaultWithAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate);

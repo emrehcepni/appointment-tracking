@@ -69,10 +69,10 @@ public class GenericRepository<TEntity, TPrimaryKey> : IGenericRepository<TEntit
         await Task.CompletedTask;
     }
 
-    public async Task DeleteByIdAsync(TPrimaryKey id, Guid userId)
+    public async Task<bool> DeleteByIdAsync(TPrimaryKey id, Guid userId)
     {
         var entity = await GetById(id);
-        if (entity is null) return;
+        if (entity is null) return false;
 
         entity.IsDeleted = true;
         entity.UpdatedDate = DateTime.UtcNow;
@@ -80,9 +80,8 @@ public class GenericRepository<TEntity, TPrimaryKey> : IGenericRepository<TEntit
 
         _dbContext.Entry(entity).State = EntityState.Modified;
 
-        await _dbContext.SaveChangesAsync();
-
-        await Task.CompletedTask;
+        var result = await _dbContext.SaveChangesAsync();
+        return BoolResult(result);
     }
 
     public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
