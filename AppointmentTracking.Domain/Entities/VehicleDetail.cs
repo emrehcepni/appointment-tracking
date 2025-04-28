@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppointmentTracking.Domain.Entities;
 
@@ -7,9 +6,9 @@ public class VehicleDetail : Entity<Guid>
 {
     [ForeignKey("Vehicle")]
     public Guid VehicleId { get; set; }
-    public string PlateNumber { get; set; }
     public Vehicle Vehicle { get; set; }
-    
+
+    public string PlateNumber { get; set; }
     public string Color { get; set; } // renk
     public string TransmissionType { get; set; } // Otomatik-Manuel Tipi
     public string TireSize { get; set; } //Lastik ebatları
