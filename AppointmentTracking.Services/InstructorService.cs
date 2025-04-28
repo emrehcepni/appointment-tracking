@@ -44,4 +44,21 @@ public class InstructorService : IInstructorService
     
         return instructors.ToList();
     }
+    
+    public async Task<bool> AddInstructor(Instructor instructor)
+    {
+        var result = await _instructorRepository.CreateAsync(instructor);
+        return result.Id != Guid.Empty;
+    }
+    
+    public async Task<Instructor?> GetInstructorById(Guid instructorId)
+    {
+        var instructor = await _instructorRepository.FirstOrDefaultWithAsNoTrackingAsync(item => item.Id == instructorId && !item.IsDeleted);
+        return instructor;
+    }
+    
+    public async Task UpdateInstructor(Instructor instructor)
+    {
+        await _instructorRepository.UpdateAsync(instructor);
+    }
 }

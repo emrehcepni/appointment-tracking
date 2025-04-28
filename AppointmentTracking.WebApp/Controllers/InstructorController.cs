@@ -31,7 +31,7 @@ public class InstructorController : Controller
     // POST: Instructor/AddOrUpdate
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult AddOrUpdate(Instructor instructor, string[] LicanceType)
+    public async Task<IActionResult> AddOrUpdate(Instructor instructor, string[] LicanceType)
     {
         if (instructor is null)
         {
@@ -43,14 +43,13 @@ public class InstructorController : Controller
 
         if (instructor.Id == Guid.Empty)
         {
-            _context.Instructors.Add(instructor);
-            TempData["SuccessMessage"] = "Eğitmen başarıyla eklendi.";
-            _context.SaveChanges();
+            await _instructorService.AddInstructor(instructor);
             
+            TempData["SuccessMessage"] = "Eğitmen başarıyla eklendi.";
             return RedirectToAction("Index");
         }
         
-        var existingInstructor = _context.Instructors.Find(instructor.Id);
+        var existingInstructor = await _instructorService.GetInstructorById(instructor.Id);
         if (existingInstructor is null)
         {
             TempData["ErrorMessage"] = "Güncellenecek eğitmen bulunamadı.";
@@ -61,8 +60,8 @@ public class InstructorController : Controller
         existingInstructor.LastName = instructor.LastName;
         existingInstructor.PhoneNumber = instructor.PhoneNumber;
         existingInstructor.LicanceType = instructor.LicanceType;
-        _context.Instructors.Update(existingInstructor);
-        _context.SaveChanges();
+        
+        await _instructorService.UpdateInstructor(existingInstructor);
         
         TempData["SuccessMessage"] = "Eğitmen başarıyla güncellendi.";
         return RedirectToAction("Index");
