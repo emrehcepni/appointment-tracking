@@ -13,21 +13,23 @@ public class AppointmentController : Controller
     private readonly IAppointmentService _appointmentService;
     private readonly ICandidateService _candidateService;
     private readonly IInstructorService _instructorService;
-
-    public AppointmentController(IAppointmentService appointmentService, ICandidateService candidateService, IInstructorService instructorService)
+    private readonly IVehicleService _vehicleService;
+    public AppointmentController(IAppointmentService appointmentService, ICandidateService candidateService, IInstructorService instructorService, IVehicleService vehicleService)
     {
         _appointmentService = appointmentService;
         _candidateService = candidateService;
         _instructorService = instructorService;
+        _vehicleService = vehicleService;
     }
 
-    public async Task<IActionResult> Index(int? month, int? week, Guid? instructorId)
+    public async Task<IActionResult> Index(int? month, int? week, Guid? instructorId, Guid? vehicleId)
     {
         ViewBag.ActiveMenuItem = "Randevu";
         ViewBag.Candidates = await _candidateService.GetAllCandidates();
         ViewBag.Instructors = await _instructorService.GetAllInstructors();
+        ViewBag.Vehicles = await _vehicleService.GetAllVehicles();
 
-        var appointments = await _appointmentService.GetAppointments(month, week, instructorId);
+        var appointments = await _appointmentService.GetAppointments(month, week, instructorId, vehicleId);
         return View(appointments);
     }
 

@@ -2,12 +2,21 @@
 using AppointmentTracking.Domain.Entities;
 using AppointmentTracking.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using AppointmentTracking.Services.Interfaces;
+using AppointmentTracking.Services;
 
 namespace AppointmentTracking.Controllers;
 
 public class VehicleController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IVehicleService _vehicleService;
+
+    public VehicleController(AppDbContext context, IVehicleService vehicleService)
+    {
+        _context = context;
+        _vehicleService = vehicleService;
+    }
 
     public VehicleController(AppDbContext context)
     {

@@ -2,17 +2,30 @@
 using AppointmentTracking.Domain.Entities;
 using AppointmentTracking.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using AppointmentTracking.Services.Interfaces;
+using AppointmentTracking.Services;
 
 namespace AppointmentTracking.Controllers;
 
 public class CandidateController : Controller
 {
-    private readonly AppDbContext _context;
 
-    public CandidateController(AppDbContext context)
+    private readonly ICandidateService _candidateService;
+    
+
+    public CandidateController(ICandidateService candidateService)
     {
-        _context = context;
+        _candidateService = candidateService;
     }
+
+
+
+    //private readonly AppDbContext _context;
+
+    //public CandidateController(AppDbContext context)
+    //{
+    //    _context = context;
+    //}
 
     // GET: Candidate/Index
     public IActionResult Index(int? page, string searchString)
@@ -22,7 +35,8 @@ public class CandidateController : Controller
         int pageNumber = page ?? 1; // Sayfa numarası (varsayılan: 1)
 
         // Adayları filtrele
-        var candidates = _context.Candidates.AsQueryable();
+        //var candidates = _candidateService.Candidate.AsQueryable();
+        var candidates = _candidateService.GetAllCandidates();
 
         if (!string.IsNullOrEmpty(searchString))
         {
@@ -92,10 +106,16 @@ public class CandidateController : Controller
             return RedirectToAction("Index");
         }
 
+        _candidateService.DeleteCandidate(candidate);
+        _candidateService.UpdateCandidate(candidate);
+        return RedirectToAction("Index");
+        
+        /*
         candidate.IsDeleted = true;
         _context.Candidates.Update(candidate);
         _context.SaveChanges();
         TempData["SuccessMessage"] = "Araç başarıyla silindi.";
         return RedirectToAction("Index");
+        */
     }
 }
