@@ -1,24 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AppointmentTracking.Domain.Entities;
-using AppointmentTracking.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using AppointmentTracking.Services.Interfaces;
-using AppointmentTracking.Services;
 
 namespace AppointmentTracking.Controllers;
 
 public class CandidateController : Controller
 {
-
     private readonly ICandidateService _candidateService;
-    
 
     public CandidateController(ICandidateService candidateService)
     {
         _candidateService = candidateService;
     }
-
-
 
     //private readonly AppDbContext _context;
 

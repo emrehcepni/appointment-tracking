@@ -4,5 +4,5 @@ namespace AppointmentTracking.Services.Interfaces;
 
 public interface IAppointmentService
 {
-    public Task<List<Appointment>> GetAppointments(int? month, int? week, Guid? instructorId, Guid? vehicleId);
+    Task<List<Appointment>> GetAppointments(int? month, int? week, Guid? instructorId);
 }

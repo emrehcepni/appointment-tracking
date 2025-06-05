@@ -13,9 +13,9 @@ public class CandidateService : ICandidateService
         _candidateRepository = candidateRepository;
     }
 
-    public async Task<IEnumerable<Candidate>> GetAllCandidates()
+    public async Task<List<Candidate>> GetAllCandidates()
     {
         var candidates = await _candidateRepository.WhereWithAsNoTrackingAsync(item => !item.IsDeleted);
-        return candidates;
+        return candidates.ToList();
     }
 }
