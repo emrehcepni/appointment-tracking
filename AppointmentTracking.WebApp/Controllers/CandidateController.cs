@@ -13,46 +13,37 @@ public class CandidateController : Controller
         _candidateService = candidateService;
     }
 
-    //private readonly AppDbContext _context;
-
-    //public CandidateController(AppDbContext context)
-    //{
-    //    _context = context;
-    //}
 
     // GET: Candidate/Index
-    public IActionResult Index(int? page, string searchString)
+    public async Task<IActionResult> Index(int? page, string searchString)
     {
         ViewBag.ActiveMenuItem = "Adaylar";
-        int pageSize = 2; // Her sayfada gösterilecek kayıt sayısı
-        int pageNumber = page ?? 1; // Sayfa numarası (varsayılan: 1)
+        int pageSize = 2;
+        int pageNumber = page ?? 1;
 
-        // Adayları filtrele
-        //var candidates = _candidateService.Candidate.AsQueryable();
-        var candidates = _candidateService.GetAllCandidates();
+        var candidates = (await _candidateService.GetAllCandidates()).ToList();
 
         if (!string.IsNullOrEmpty(searchString))
         {
-            candidates = candidates.Where(c =>
-                c.FirstName.Contains(searchString) ||
-                c.LastName.Contains(searchString) ||
-                c.PhoneNumber.Contains(searchString));
+            candidates = candidates
+                .Where(c =>
+                    c.FirstName.Contains(searchString) ||
+                    c.LastName.Contains(searchString) ||
+                    c.PhoneNumber.Contains(searchString))
+                .ToList();
         }
 
-        // Toplam kayıt sayısını hesapla
         int totalCount = candidates.Count();
 
-        // Sayfalama yap
         var pagedCandidates = candidates
-            .OrderBy(c => c.Id) // Sıralama yap
-            .Skip((pageNumber - 1) * pageSize) // Atlanacak kayıt sayısı
-            .Take(pageSize) // Alınacak kayıt sayısı
+            .OrderBy(c => c.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToList();
 
-        // ViewBag ile sayfalama bilgilerini View'a gönder
         ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
         ViewBag.CurrentPage = pageNumber;
-        ViewBag.SearchString = searchString; // Arama metnini View'da tut
+        ViewBag.SearchString = searchString;
 
         return View(pagedCandidates);
     }
@@ -64,51 +55,43 @@ public class CandidateController : Controller
     {
         if (ModelState.IsValid)
         {
-            _context.Candidates.Add(candidate);
-            _context.SaveChanges();
+            await _candidateService.AddCandidate(candidate);
             return RedirectToAction("Index");
         }
+
         foreach (var modelState in ModelState.Values)
         {
             foreach (var error in modelState.Errors)
             {
-                Console.WriteLine(error.ErrorMessage); 
+                Console.WriteLine(error.ErrorMessage);
             }
         }
-        
 
-        // Eğer model geçerli değilse, mevcut aday listesi ile sayfayı tekrar göster
-        var candidates = _context.Candidates.ToList();
+        var candidates = (await _candidateService.GetAllCandidates()).ToList();
         return View("Index", candidates);
     }
 
     // POST: Candidate/Delete
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int selectedCandidateId)
+    public async Task<IActionResult> Delete(Guid selectedCandidateId)
     {
-        if (selectedCandidateId == 0)
+        if (selectedCandidateId == Guid.Empty)
         {
             TempData["ErrorMessage"] = "Lütfen silmek için bir aday seçin.";
             return RedirectToAction("Index");
         }
-        var candidate = await _context.Candidates.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Guid.Empty); // selectedCandidateId
+
+        var candidate = await _candidateService.GetCandidateById(selectedCandidateId);
         if (candidate is null)
         {
             TempData["ErrorMessage"] = "Aday bulunamadı.";
             return RedirectToAction("Index");
         }
 
-        _candidateService.DeleteCandidate(candidate);
-        _candidateService.UpdateCandidate(candidate);
+        await _candidateService.DeleteCandidate(candidate.Id); 
+        TempData["SuccessMessage"] = "Aday başarıyla silindi.";
         return RedirectToAction("Index");
-        
-        /*
-        candidate.IsDeleted = true;
-        _context.Candidates.Update(candidate);
-        _context.SaveChanges();
-        TempData["SuccessMessage"] = "Araç başarıyla silindi.";
-        return RedirectToAction("Index");
-        */
     }
+
 }
