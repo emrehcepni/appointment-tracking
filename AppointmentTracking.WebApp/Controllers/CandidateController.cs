@@ -13,9 +13,8 @@ public class CandidateController : Controller
         _candidateService = candidateService;
     }
 
-
     // GET: Candidate/Index
-    public async Task<IActionResult> Index(int? page, string searchString)
+    public async Task<IActionResult> Index(int? page, string searchString, Guid? editId)
     {
         ViewBag.ActiveMenuItem = "Adaylar";
         int pageSize = 2;
@@ -33,6 +32,12 @@ public class CandidateController : Controller
                 .ToList();
         }
 
+        if (editId.HasValue && editId.Value != Guid.Empty)
+        {
+            var editCandidate = await _candidateService.GetCandidateById(editId.Value);
+            ViewBag.EditCandidate = editCandidate;
+        }
+
         int totalCount = candidates.Count();
 
         var pagedCandidates = candidates
@@ -48,27 +53,29 @@ public class CandidateController : Controller
         return View(pagedCandidates);
     }
 
-    // POST: Candidate/Add
+    // POST: Candidate/Save
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Add(Candidate candidate)
+    public async Task<IActionResult> Save(Candidate candidate)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+        {
+            var candidates = (await _candidateService.GetAllCandidates()).ToList();
+            return View("Index", candidates);
+        }
+
+        if (candidate.Id == Guid.Empty)
         {
             await _candidateService.AddCandidate(candidate);
-            return RedirectToAction("Index");
+            TempData["SuccessMessage"] = "Aday başarıyla eklendi.";
         }
-
-        foreach (var modelState in ModelState.Values)
+        else
         {
-            foreach (var error in modelState.Errors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
+            await _candidateService.UpdateCandidate(candidate);
+            TempData["SuccessMessage"] = "Aday başarıyla güncellendi.";
         }
 
-        var candidates = (await _candidateService.GetAllCandidates()).ToList();
-        return View("Index", candidates);
+        return RedirectToAction("Index");
     }
 
     // POST: Candidate/Delete
@@ -89,9 +96,8 @@ public class CandidateController : Controller
             return RedirectToAction("Index");
         }
 
-        await _candidateService.DeleteCandidate(candidate.Id); 
+        await _candidateService.DeleteCandidate(candidate.Id);
         TempData["SuccessMessage"] = "Aday başarıyla silindi.";
         return RedirectToAction("Index");
     }
-
 }

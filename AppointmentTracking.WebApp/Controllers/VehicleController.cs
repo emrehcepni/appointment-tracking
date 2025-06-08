@@ -1,26 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AppointmentTracking.Domain.Entities;
-using AppointmentTracking.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using AppointmentTracking.Services.Interfaces;
-using AppointmentTracking.Services;
 
 namespace AppointmentTracking.Controllers;
 
 public class VehicleController : Controller
 {
-    private readonly AppDbContext _context;
     private readonly IVehicleService _vehicleService;
 
-    public VehicleController(AppDbContext context, IVehicleService vehicleService)
+    public VehicleController(IVehicleService vehicleService)
     {
-        _context = context;
         _vehicleService = vehicleService;
     }
 
-    public VehicleController(AppDbContext context)
+    // GET: Vehicle/Index
+    public async Task<IActionResult> Index(int? page)
     {
-        _context = context;
+        ViewBag.ActiveMenuItem = "Araçlar";
+        int pageSize = 5;
+        int pageNumber = page ?? 1;
+
+        var vehicles = await _vehicleService.GetAllVehicles();
+        var paged = vehicles
+            .Where(v => !v.IsDeleted)
+            .OrderBy(v => v.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.TotalPages = (int)Math.Ceiling(vehicles.Count / (double)pageSize);
+        ViewBag.CurrentPage = pageNumber;
+
+        return View("Index", paged);
     }
 
     // POST: Vehicle/AddOrUpdate
@@ -28,205 +39,86 @@ public class VehicleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOrUpdate(Vehicle vehicle)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            if (vehicle.Id == Guid.Empty)
-            {
-                await _context.Vehicles.AddAsync(vehicle); 
-                TempData["SuccessMessage"] = "Araç başarıyla kaydedildi.";
-            }
-            else
-            {
-                var existingVehicle = await _context.Vehicles.FindAsync(vehicle.Id);
-                if (existingVehicle != null)
-                {
-                    existingVehicle.Make = vehicle.Make;
-                    existingVehicle.Brand = vehicle.Brand;
-                    existingVehicle.ModelYear = vehicle.ModelYear;
-                    existingVehicle.LicensePlate = vehicle.LicensePlate;
-                    existingVehicle.InspectionDate = vehicle.InspectionDate;
-                    existingVehicle.Accessible = vehicle.Accessible;
-                    _context.Vehicles.Update(existingVehicle);
-                    TempData["SuccessMessage"] = "Araç başarıyla güncellendi.";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Güncellenecek araç bulunamadı.";
-                    return RedirectToAction("Index");
-                }
-            }
-
-            await _context.SaveChangesAsync(); 
-            Console.WriteLine($"Adding or Updating Vehicle: {vehicle.Make} {vehicle.ModelYear} ({vehicle.LicensePlate})");
-
+            TempData["ErrorMessage"] = "Lütfen tüm alanları doldurun.";
             return RedirectToAction("Index");
+        }
+
+        if (vehicle.Id == Guid.Empty)
+        {
+            vehicle.Id = Guid.NewGuid();
+            await _vehicleService.AddVehicle(vehicle);
+            TempData["SuccessMessage"] = "Araç başarıyla eklendi.";
         }
         else
         {
-            foreach (var key in ModelState.Keys)
-            {
-                foreach (var error in ModelState[key].Errors)
-                {
-                    Console.WriteLine($"ModelState Hatası - {key}: {error.ErrorMessage}");
-                }
-            }
+            await _vehicleService.UpdateVehicle(vehicle);
+            TempData["SuccessMessage"] = "Araç başarıyla güncellendi.";
         }
 
-        TempData["ErrorMessage"] = "Lütfen tüm alanları doğru doldurduğunuzdan emin olun.";
         return RedirectToAction("Index");
     }
 
-    //index oto list
+    // GET: Vehicle/Search
     [HttpGet]
-    public async Task<IActionResult> Index(int? page)
-    {
-        ViewBag.ActiveMenuItem = "Araçlar";
-        int pageSize = 5;
-        int pageNumber = page ?? 1;
-
-        var vehicles = await _context.Vehicles
-            .AsNoTracking()
-            .Where(item => !item.IsDeleted)
-            .OrderBy(v => v.Id)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(); 
-
-        int totalCount = await _context.Vehicles.CountAsync(); 
-        ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        ViewBag.CurrentPage = pageNumber;
-
-        return View("Index", vehicles);
-    }
-
-    // Filtre
-    [HttpGet]
-    public async Task<IActionResult> Search(int? page, string? make, string? brand, int? modelYear, string? licensePlate, DateTime? inspectionDate, bool? accessible)
+    public async Task<IActionResult> Search(string? make, string? brand, int? modelYear, string? licensePlate, DateTime? inspectionDate, bool? accessible, int? page)
     {
         int pageSize = 5;
         int pageNumber = page ?? 1;
 
-        var vehicles = _context.Vehicles
-            .Where(v => v.IsDeleted == false) // ❗ Silinmemiş araçları getiriyoruz
-            .AsQueryable();
-
-        // Arama kriterleri varsa uygula
-        if (!string.IsNullOrEmpty(make))
-            vehicles = vehicles.Where(v => v.Make.Contains(make));
-
-        if (!string.IsNullOrEmpty(brand))
-            vehicles = vehicles.Where(v => v.Brand.Contains(brand));
-
-        if (modelYear.HasValue)
-            vehicles = vehicles.Where(v => v.ModelYear == modelYear.Value);
-
-        if (!string.IsNullOrEmpty(licensePlate))
-            vehicles = vehicles.Where(v => v.LicensePlate.Contains(licensePlate));
-
-        if (inspectionDate.HasValue)
-            vehicles = vehicles.Where(v => v.InspectionDate == inspectionDate.Value);
-
-        if (accessible.HasValue)
-            vehicles = vehicles.Where(v => v.Accessible == accessible.Value);
-
-        int totalCount = await vehicles.CountAsync(); // Asenkron sayım
-        var pagedVehicles = await vehicles
-            .OrderByDescending(v => v.CreatedDate) // BUNA DİKKAT
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(); // **Burada listeye çeviriyoruz!**
-
-        // ViewBag'e sayfa bilgilerini ekleyelim
-        ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-        ViewBag.CurrentPage = pageNumber;
-        ViewBag.Make = make;
-        ViewBag.Brand = brand;
-        ViewBag.ModelYear = modelYear;
-        ViewBag.LicensePlate = licensePlate;
-        ViewBag.InspectionDate = inspectionDate;
-        ViewBag.Accessible = accessible;
-
-        return View("Index", pagedVehicles); // **Burada artık bir List<Vehicle> gidiyor!**
-    }
-
-    //public IActionResult Search(int? page, string make, string brand, int? modelYear, string licensePlate, DateTime inspectionDate, bool? accessible)
-    //{
-    //    int pageSize = 5;
-    //    int pageNumber = page ?? 1;
-
-    //    var vehicles = _context.Vehicles.AsQueryable();
-
-    //    // Arama kriterleri varsa uygula
-    //    if (!string.IsNullOrEmpty(make))
-    //        vehicles = vehicles.Where(v => v.Make.Contains(make));
-
-    //    if (!string.IsNullOrEmpty(brand))
-    //        vehicles = vehicles.Where(v => v.Brand.Contains(brand));
-
-    //    if (modelYear.HasValue)
-    //        vehicles = vehicles.Where(v => v.ModelYear == modelYear.Value);
-
-    //    if (!string.IsNullOrEmpty(licensePlate))
-    //        vehicles = vehicles.Where(v => v.LicensePlate.Contains(licensePlate));
-
-    //    if (inspectionDate != null)
-    //    {
-    //        vehicles = vehicles.Where(v => v.InspectionDate == inspectionDate);
-    //    }
-
-
-
-    //    if (accessible.HasValue)
-    //        vehicles = vehicles.Where(v => v.Accessible == accessible.Value);
-
-    //    int totalCount = vehicles.Count();
-    //    var pagedVehicles = vehicles
-    //        .OrderBy(v => v.VehicleId)
-    //        .Skip((pageNumber - 1) * pageSize)
-    //        .Take(pageSize)
-    //        .ToList();
-
-    //    ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-    //    ViewBag.CurrentPage = pageNumber;
-    //    ViewBag.Make = make;
-    //    ViewBag.Brand = brand;
-    //    ViewBag.ModelYear = modelYear;
-    //    ViewBag.LicensePlate = licensePlate;
-    //    ViewBag.InspectionDate = inspectionDate;
-    //    ViewBag.Accessible = accessible;
-
-    //    return View("Index", pagedVehicles);
-    //}
-
-    public IActionResult CheckInspectionStatus()
-    {
-        DateTime today = DateTime.Today;
-        DateTime warningDate = today.AddDays(10);
-
-        var vehiclesWithExpiringInspection = _context.Vehicles
-            .Where(v => v.InspectionDate.HasValue && v.InspectionDate.Value <= warningDate)
+        var vehicles = await _vehicleService.SearchVehicle("");
+        vehicles = vehicles
+            .Where(v => !v.IsDeleted &&
+                (string.IsNullOrEmpty(make) || v.Make.Contains(make)) &&
+                (string.IsNullOrEmpty(brand) || v.Brand.Contains(brand)) &&
+                (!modelYear.HasValue || v.ModelYear == modelYear.Value) &&
+                (string.IsNullOrEmpty(licensePlate) || v.LicensePlate.Contains(licensePlate)) &&
+                (!inspectionDate.HasValue || v.InspectionDate == inspectionDate.Value) &&
+                (!accessible.HasValue || v.Accessible == accessible.Value))
             .ToList();
 
-        return Json(vehiclesWithExpiringInspection);
+        var pagedVehicles = vehicles
+            .OrderByDescending(v => v.CreatedDate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.TotalPages = (int)Math.Ceiling(vehicles.Count / (double)pageSize);
+        ViewBag.CurrentPage = pageNumber;
+
+        return View("Index", pagedVehicles);
     }
 
     // POST: Vehicle/Delete
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int selectedVehicleId)
+    public async Task<IActionResult> Delete(Guid selectedVehicleId)
     {
-        var vehicle = await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(item => item.Id == Guid.Empty); // selectedVehicleId
-        if (vehicle is null)
+        var vehicle = await _vehicleService.GetVehicleById(selectedVehicleId);
+        if (vehicle == null)
         {
             TempData["ErrorMessage"] = "Araç bulunamadı.";
             return RedirectToAction("Index");
         }
 
         vehicle.IsDeleted = true;
-        _context.Vehicles.Update(vehicle);
-        _context.SaveChanges();
+        await _vehicleService.UpdateVehicle(vehicle);
         TempData["SuccessMessage"] = "Araç başarıyla silindi.";
-
         return RedirectToAction("Index");
+    }
+
+    // GET: Vehicle/CheckInspectionStatus
+    public async Task<IActionResult> CheckInspectionStatus()
+    {
+        var today = DateTime.Today;
+        var warningDate = today.AddDays(10);
+
+        var vehicles = await _vehicleService.GetAllVehicles();
+        var expiring = vehicles
+            .Where(v => v.InspectionDate.HasValue && v.InspectionDate.Value <= warningDate)
+            .ToList();
+
+        return Json(expiring);
     }
 }
