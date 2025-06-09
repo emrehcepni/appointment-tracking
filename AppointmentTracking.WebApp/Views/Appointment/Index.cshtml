@@ -1,373 +1,198 @@
 ﻿@model List<AppointmentTracking.Domain.Entities.Appointment>
-<div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-</div>
+<!-- JQuery & Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-@*Menü Bar*@
+<!-- Randevu Takvimi Başlığı ve Menü -->
 <div class="container-fluid">
     <div class="row">
         <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar show">
-            <div class="position-sticky">
-                <div class="text-center mb-3">
-                    <h3>Direksiyon Takip</h3>
-                </div>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Randevu" ? "active" : "")" href="/Appointment">
-                            <i class="bi bi-calendar-event"></i> Randevu
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Adaylar" ? "active" : "")" href="/Candidate">
-                            <i class="bi bi-person"></i> Adaylar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Araçlar" ? "active" : "")" href="/Vehicle">
-                            <i class="bi bi-car-front"></i> Araçlar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Eğitmenler" ? "active" : "")" href="/Instructor">
-                            <i class="bi bi-person-video2"></i> Eğitmenler
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Account/Logout">
-                            <i class="bi bi-box-arrow-right"></i> Çıkış
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <!-- Menü içeriği -->
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <h2>Randevu Takvimi</h2>
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-list"></i> Menüyü Kapat/Aç
-                    </button>
-                </div>
-            </div>
-<!-- içerik -->
-@{
-    ViewBag.Title = "Randevu Takvimi";
-}
-
-<div class="container">
-    
-
-    <!-- 🟢 Ay, Hafta ve Eğitmen Seçimi -->
-    <div class="row">
-        <div class="col-md-3">
-            <label for="month">Ay Seç</label>
-            <select id="month" class="form-control">
-                @for (int i = 1; i <= 12; i++)
-                {
-                    <option value="@i">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label for="week">Hafta Seç</label>
-            <select id="week" class="form-control">
-                @for (int i = 1; i <= 5; i++)
-                {
-                    <option value="@i">@i. Hafta</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label for="instructorId">Hoca</label>
-            <select id="instructorId" class="form-control">
-                @foreach (var instructor in ViewBag.Instructors)
-                {
-                    <option value="@instructor.InstructorId">@instructor.FirstName @instructor.LastName</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <button id="filterBtn" class="btn btn-primary" style="margin-top: 25px;">Filtrele</button>
-        </div>
-    </div>
-
-    <br />
-
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Saat</th>
-                    <th>Pazartesi</th>
-                    <th>Salı</th>
-                    <th>Çarşamba</th>
-                    <th>Perşembe</th>
-                    <th>Cuma</th>
-                    <th>Cumartesi</th>
-                    <th>Pazar</th>
-                </tr>
-            </thead>
-            <tbody id="appointmentTable"></tbody>
-        </table>
-    </div>
-
-    <div id="appointmentModal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Randevu Ekle/Düzenle</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="selectedDate" />
-                    <input type="hidden" id="selectedTime" />
-
-                    <label>Aday Seç:</label>
-                    <select id="candidateId" class="form-control">
-                        @foreach (var candidate in ViewBag.Candidates)
+            <!-- Filtreleme Formu -->
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Ay Seç</label>
+                    <select id="month" class="form-control">
+                        @for (int i = 1; i <= 12; i++)
                         {
-                            <option value="@candidate.CandidateId">@candidate.FirstName @candidate.LastName</option>
+                            <option value="@i">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
                         }
                     </select>
-
-                    <label for="vehicleId">Araç Seçimi</label>
-                    <select id="vehicleId" class="form-control">
-                        <option value="">Araç Seçiniz</option>
+                </div>
+                <div class="col-md-3">
+                    <label>Hafta Seç</label>
+                    <select id="week" class="form-control">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <option value="@i">@i. Hafta</option>
+                        }
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button id="saveAppointmentBtn" class="btn btn-success">Kaydet</button>
-                    <button class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                <div class="col-md-3">
+                    <label>Hoca</label>
+                    <select id="instructorId" class="form-control">
+                        @foreach (var instructor in ViewBag.Instructors)
+                        {
+                            <option value="@instructor.InstructorId">@instructor.FirstName @instructor.LastName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button id="filterBtn" class="btn btn-primary mt-4">Filtrele</button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <script>
-        // Modal açılınca araçları yükle
-        $('#appointmentModal').on('show.bs.modal', function () {
-            loadAvailableVehicles();
-        });
+            <!-- Takvim Tablosu -->
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Saat</th>
+                            <th>Pzt</th>
+                            <th>Sal</th>
+                            <th>Çar</th>
+                            <th>Per</th>
+                            <th>Cum</th>
+                            <th>Cmt</th>
+                            <th>Paz</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTable"></tbody>
+                </table>
+            </div>
 
-        // Araçları yükleme fonksiyonu
-        function loadAvailableVehicles() {
-            $.ajax({
-                url: "/Appointment/GetAllVehicles",
-                type: "GET",
-                success: function (vehicles) {
-                    var vehicleDropdown = $("#vehicleId");
-                    vehicleDropdown.empty();
-                    vehicleDropdown.append('<option value="">Araç Seçiniz</option>');
+            <!-- Randevu Modal -->
+            <div class="modal fade" id="appointmentModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Randevu Ekle/Düzenle</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="selectedDate" />
+                            <input type="hidden" id="selectedTime" />
 
-                    $.each(vehicles, function (index, vehicle) {
-                        vehicleDropdown.append('<option value="' + vehicle.vehicleId + '">' + vehicle.licensePlate + '</option>');
+                            <label>Aday Seç:</label>
+                            <select id="candidateId" class="form-control">
+                                @foreach (var c in ViewBag.Candidates)
+                                {
+                                    <option value="@c.CandidateId">@c.FirstName @c.LastName</option>
+                                }
+                            </select>
+
+                            <label>Araç Seç:</label>
+                            <select id="vehicleId" class="form-control"></select>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="saveAppointmentBtn" class="btn btn-success">Kaydet</button>
+                            <button class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript Kodları -->
+            <script>
+                $(document).ready(function () {
+                    $("#filterBtn").click(function () {
+                        $.get("/Appointment/GetAppointments", {
+                            month: $("#month").val(),
+                            week: $("#week").val(),
+                            instructorId: $("#instructorId").val()
+                        }, generateTable);
                     });
-                },
-                error: function () {
-                    alert("Araçlar yüklenirken hata oluştu.");
-                }
-            });
-        }
 
-        // Randevuyu kaydet
-        $("#saveAppointmentBtn").click(function () {
-        var selectedDate = $("#selectedDate").val();
-        var selectedTime = $("#selectedTime").val();
-        var candidateId = $("#candidateId").val();
-        var vehicleId = $("#vehicleId").val();
+                    function generateTable(appointments) {
+                        const tbody = $("#appointmentTable").empty();
+                        const hours = [...Array(10).keys()].map(h => h + 9);
+                        const startOfWeek = new Date();
+                        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
 
-        if (!candidateId || !vehicleId || !selectedDate || !selectedTime) {
-            alert("Lütfen tüm alanları doldurun!");
-            return;
-        }
+                        hours.forEach(hour => {
+                            let row = `<tr><td>${hour}:00</td>`;
+                            for (let i = 0; i < 7; i++) {
+                                const day = new Date(startOfWeek);
+                                day.setDate(day.getDate() + i);
+                                const dateStr = day.toISOString().split("T")[0];
 
-        // StartTime ve EndTime hesaplama
-        var startTime = new Date(selectedDate + "T" + selectedTime);
-        var endTime = new Date(startTime);
-        endTime.setHours(endTime.getHours() + 1); // 1 saat ekle
+                                const appointment = appointments.find(a => {
+                                    const aDate = new Date(a.startTime);
+                                    return aDate.getDay() === day.getDay() && aDate.getHours() === hour;
+                                });
 
-        var data = {
-            instructorId: 1, // Gerekirse instructorId'yi dinamik olarak ayarlayın
-            candidateId: candidateId,
-            vehicleId: vehicleId,
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString()
-        };
-
-        $.ajax({
-            url: "/Appointment/SaveAppointment",
-            type: "POST",
-            data: data,
-            success: function (response) {
-                if (response.success) {
-                    $("#appointmentModal").modal("hide");
-                    alert("Randevu başarıyla kaydedildi!");
-                    $("#filterBtn").click();
-                } else {
-                    alert(response.message || "Randevu kaydedilirken hata oluştu.");
-                }
-            },
-            error: function () {
-                alert("Randevu kaydedilirken hata oluştu.");
-            }
-        });
-        });
-    </script>
-
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-             function loadAvailableVehicles() {
-            $.ajax({
-                url: "/Appointment/GetAllVehicles",
-                type: "GET",
-                success: function (vehicles) {
-                    var vehicleDropdown = $("#vehicleId");
-                    vehicleDropdown.empty();
-                    vehicleDropdown.append('<option value="">Araç Seçiniz</option>');
-
-                    $.each(vehicles, function (index, vehicle) {
-                        vehicleDropdown.append('<option value="' + vehicle.vehicleId + '">' + vehicle.licensePlate + '</option>');
-                    });
-                },
-                error: function () {
-                    alert("Araçlar yüklenirken hata oluştu.");
-                }
-            });
-        }
-
-            $("#filterBtn").click(function () {
-                var month = $("#month").val();
-                var week = $("#week").val();
-                var instructorId = $("#instructorId").val();
-
-                $.ajax({
-                    url: '/Appointment/GetAppointments',
-                    type: 'GET',
-                    data: { month: month, week: week, instructorId: instructorId },
-                    success: function (appointments) {
-                        generateTable(appointments);
-                    },
-                    error: function () {
-                        alert("Randevular yüklenirken hata oluştu.");
+                                if (appointment) {
+                                    row += `<td class="appointment-cell bg-warning text-white" data-date="${dateStr}" data-time="${hour}:00">
+                                                <b>${appointment.candidate}</b><br>${appointment.vehicle}
+                                            </td>`;
+                                } else {
+                                    row += `<td class="appointment-cell" data-date="${dateStr}" data-time="${hour}:00">
+                                                <span class="text-muted">Boş</span>
+                                            </td>`;
+                                }
+                            }
+                            row += "</tr>";
+                            tbody.append(row);
+                        });
                     }
-                });
-            });
 
-            function generateTable(appointments) {
-                var tableBody = $("#appointmentTable");
-                tableBody.empty();
-                var hours = [...Array(10).keys()].map(i => i + 9);
-                var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    $(document).on("click", ".appointment-cell", function () {
+                        const date = $(this).data("date");
+                        const time = $(this).data("time");
 
-                hours.forEach(function (hour) {
-                    var row = "<tr><td>" + hour + ":00</td>";
+                        const start = new Date(`${date}T${time}`);
+                        const end = new Date(start);
+                        end.setHours(end.getHours() + 1);
 
-                    days.forEach(function (day) {
-                        var appointment = appointments.find(a => new Date(a.startTime).toLocaleDateString('en-US', { weekday: 'long' }) === day && new Date(a.startTime).getHours() === hour);
-                        if (appointment) {
-                            row += `<td class="appointment-cell bg-warning text-white" data-time="${appointment.startTime}" data-candidate="${appointment.candidateId}">
-                                        <b>${appointment.candidate}</b><br />
-                                        ${appointment.vehicle}
-                                    </td>`;
-                        } else {
-                            row += `<td class="appointment-cell" data-time="${hour}"><span class="text-muted">Boş</span></td>`;
-                        }
+                        $("#selectedDate").val(date);
+                        $("#selectedTime").val(time);
+
+                        $.get("/Appointment/GetAvailableVehicles", {
+                            startTime: start.toISOString(),
+                            endTime: end.toISOString()
+                        }, function (vehicles) {
+                            const dropdown = $("#vehicleId").empty();
+                            dropdown.append('<option value="">Araç Seçiniz</option>');
+                            vehicles.forEach(v => dropdown.append(`<option value="${v.vehicleId}">${v.licensePlate}</option>`));
+                        });
+
+                        $("#appointmentModal").modal("show");
                     });
 
-                    row += "</tr>";
-                    tableBody.append(row);
+                    $("#saveAppointmentBtn").click(function () {
+                        const start = new Date($("#selectedDate").val() + "T" + $("#selectedTime").val());
+                        const data = {
+                            instructorId: $("#instructorId").val(),
+                            candidateId: $("#candidateId").val(),
+                            vehicleId: $("#vehicleId").val(),
+                            startTime: start.toISOString()
+                        };
+
+                        if (!data.candidateId || !data.vehicleId || !data.startTime) return alert("Tüm alanlar zorunludur.");
+
+                        $.post("/Appointment/SaveAppointment", data, function (res) {
+                            if (res.success) {
+                                $("#appointmentModal").modal("hide");
+                                alert("Randevu kaydedildi!");
+                                $("#filterBtn").click();
+                            } else {
+                                alert(res.message || "Kayıt hatası.");
+                            }
+                        });
+                    });
                 });
-            }
-
-            $(document).on('click', '.appointment-cell', function () {
-                var selectedTime = $(this).data("time");
-                $("#selectedTime").val(selectedTime);
-                loadAvailableVehicles(selectedTime);
-                $("#appointmentModal").modal("show");
-                    $('#appointmentModal').on('show.bs.modal', function () {
-            loadAvailableVehicles();
-        });
-            });
-
-            // $("#saveAppointmentBtn").click(function () {
-            //     var data = {
-            //         instructorId: $("#instructorId").val(),
-            //         startTime: $("#selectedTime").val(),
-            //         candidateId: $("#candidateId").val(),
-            //         vehiclePlate: $("#vehiclePlate").val()
-            //     };
-
-                // $.ajax({
-                //     url: "/Appointment/SaveAppointment",
-                //     type: "POST",
-                //     data: data,
-                //     success: function (response) {
-                //         if (response.success) {
-                //             $("#appointmentModal").modal("hide");
-                //             alert("Randevu başarıyla kaydedildi!");
-                //             $("#filterBtn").click();
-                //         } else {
-                //             alert(response.message || "Randevu kaydedilirken hata oluştu.");
-                //         }
-                //     },
-                //     error: function () {
-                //         alert("Randevu kaydedilirken hata oluştu.");
-                //     }
-                // });
-
-            // });
-                 $("#saveAppointmentBtn").click(function () {
-            var selectedTime = $("#selectedTime").val();
-            var candidateId = $("#candidateId").val();
-            var vehicleId = $("#vehicleId").val();
-
-            if (!candidateId || !vehicleId || !selectedTime) {
-                alert("Lütfen tüm alanları doldurun!");
-                return;
-            }
-
-            var data = {
-                instructorId: 1, // Gerekirse instructorId'yi dinamik olarak ayarlayın
-                candidateId: candidateId,
-                vehicleId: vehicleId,
-                startTime: selectedTime
-            };
-
-            $.ajax({
-                url: "/Appointment/SaveAppointment",
-                type: "POST",
-                data: data,
-                success: function (response) {
-                    if (response.success) {
-                        $("#appointmentModal").modal("hide");
-                        alert("Randevu başarıyla kaydedildi!");
-                        $("#filterBtn").click();
-                    } else {
-                        alert(response.message || "Randevu kaydedilirken hata oluştu.");
-                    }
-                },
-                error: function () {
-                    alert("Randevu kaydedilirken hata oluştu.");
-                }
-            });
-        });
-      
-    
-    </script>
-</div>
-
+            </script>
         </main>
     </div>
 </div>
 
+<!-- CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link rel="stylesheet" href="~/css/menu.css" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -375,23 +200,14 @@
     document.addEventListener('DOMContentLoaded', function () {
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.querySelector('main'); // İçerik alanı
+        const mainContent = document.querySelector('main');
 
         if (sidebarToggle && sidebar && mainContent) {
             sidebarToggle.addEventListener('click', function () {
                 sidebar.classList.toggle('show');
-
-                // Menü kapalıysa içerik tam ekran olsun, açıksa eski haline dönsün
-                if (sidebar.classList.contains('show')) {
-                    mainContent.style.marginLeft = '250px';
-                    mainContent.style.width = 'calc(100% - 250px)';
-                } else {
-                    mainContent.style.marginLeft = '0';
-                    mainContent.style.width = '100%';
-                }
+                mainContent.style.marginLeft = sidebar.classList.contains('show') ? '250px' : '0';
+                mainContent.style.width = sidebar.classList.contains('show') ? 'calc(100% - 250px)' : '100%';
             });
-        } else {
-            console.error('sidebarToggle, sidebar veya main elementi bulunamadı.');
         }
     });
 </script>
