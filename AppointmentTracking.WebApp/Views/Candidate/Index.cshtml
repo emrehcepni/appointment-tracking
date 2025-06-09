@@ -4,44 +4,9 @@
     var editCandidate = ViewBag.EditCandidate as AppointmentTracking.Domain.Entities.Candidate;
     bool isEditMode = editCandidate != null;
 }
-@*Menü Bar*@
+
 <div class="container-fluid">
     <div class="row">
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar show">
-            <div class="position-sticky">
-                <div class="text-center mb-3">
-                    <h3>Direksiyon Takip</h3>
-                </div>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Randevu" ? "active" : "")" href="/Appointment">
-                            <i class="bi bi-calendar-event"></i> Randevu
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Adaylar" ? "active" : "")" href="/Candidate">
-                            <i class="bi bi-person"></i> Adaylar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Araçlar" ? "active" : "")" href="/Vehicle">
-                            <i class="bi bi-car-front"></i> Araçlar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(ViewBag.ActiveMenuItem == "Eğitmenler" ? "active" : "")" href="/Instructor">
-                            <i class="bi bi-person-video2"></i> Eğitmenler
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Account/Logout">
-                            <i class="bi bi-box-arrow-right"></i> Çıkış
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <h2>Aday Listesi</h2>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -141,31 +106,3 @@
         </main>
     </div>
 </div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<link rel="stylesheet" href="~/css/menu.css" />
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.querySelector('main'); // İçerik alanı
-
-        if (sidebarToggle && sidebar && mainContent) {
-            sidebarToggle.addEventListener('click', function () {
-                sidebar.classList.toggle('show');
-
-                // Menü kapalıysa içerik tam ekran olsun, açıksa eski haline dönsün
-                if (sidebar.classList.contains('show')) {
-                    mainContent.style.marginLeft = '250px';
-                    mainContent.style.width = 'calc(100% - 250px)';
-                } else {
-                    mainContent.style.marginLeft = '0';
-                    mainContent.style.width = '100%';
-                }
-            });
-        } else {
-            console.error('sidebarToggle, sidebar veya main elementi bulunamadı.');
-        }
-    });
-</script>

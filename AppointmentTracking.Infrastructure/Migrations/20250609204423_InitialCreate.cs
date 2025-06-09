@@ -24,11 +24,11 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LessonsHour = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -146,12 +146,12 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     ModelYear = table.Column<int>(type: "int", nullable: false),
                     LicensePlate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InspectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
