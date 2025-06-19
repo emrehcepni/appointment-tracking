@@ -19,7 +19,7 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("dbo");
+        modelBuilder.HasDefaultSchema("public");
         modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
     }
 }

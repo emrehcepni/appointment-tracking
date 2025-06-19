@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AppointmentTracking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250619210043_InitialCreate")]
+    [Migration("20250619214310_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("dbo")
+                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -73,7 +73,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Appointments", "dbo");
+                    b.ToTable("Appointments", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.Candidate", b =>
@@ -117,7 +117,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Candidates", "dbo");
+                    b.ToTable("Candidates", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.Instructor", b =>
@@ -162,7 +162,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Instructors", "dbo");
+                    b.ToTable("Instructors", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.Lesson", b =>
@@ -199,7 +199,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lessons", "dbo");
+                    b.ToTable("Lessons", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.User", b =>
@@ -249,7 +249,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", "dbo");
+                    b.ToTable("Users", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.Vehicle", b =>
@@ -304,7 +304,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
                     b.HasIndex("AppointmentId");
 
-                    b.ToTable("Vehicles", "dbo");
+                    b.ToTable("Vehicles", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.VehicleDetail", b =>
@@ -391,7 +391,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("VehicleDetails", "dbo");
+                    b.ToTable("VehicleDetails", "public");
                 });
 
             modelBuilder.Entity("AppointmentTracking.Domain.Entities.Appointment", b =>
