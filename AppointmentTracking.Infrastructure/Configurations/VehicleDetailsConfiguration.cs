@@ -15,7 +15,7 @@ public class VehicleDetailsConfiguration : IEntityTypeConfiguration<VehicleDetai
 
         builder.Property(e => e.Id)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(v => v.IsDeleted).HasDefaultValue(true);
 
