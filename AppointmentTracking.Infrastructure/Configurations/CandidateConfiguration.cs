@@ -15,7 +15,7 @@ public class CandidateConfiguration : IEntityTypeConfiguration<Candidate>
 
         builder.Property(e => e.Id)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(c => c.IsDeleted).HasDefaultValue(true);
     }

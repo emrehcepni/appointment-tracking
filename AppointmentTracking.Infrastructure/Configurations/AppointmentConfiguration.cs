@@ -15,7 +15,7 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
 
         builder.Property(e => e.Id)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(a => a.IsDeleted).HasDefaultValue(true);
         builder.HasOne(a => a.Vehicle)

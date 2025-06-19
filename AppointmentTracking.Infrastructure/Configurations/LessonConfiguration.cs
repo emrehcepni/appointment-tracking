@@ -15,7 +15,7 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
 
         builder.Property(e => e.Id)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(l => l.IsDeleted).HasDefaultValue(true);
     }

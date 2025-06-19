@@ -15,7 +15,7 @@ public class InstractorConfiguration : IEntityTypeConfiguration<Instructor>
 
         builder.Property(e => e.Id)
             .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
         builder.Property(i => i.IsDeleted).HasDefaultValue(true);
     }
