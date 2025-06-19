@@ -12,7 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions =>
         {
-            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "dbo");
+            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "public");
         }));
 
 // Add services to the container.

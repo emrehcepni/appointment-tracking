@@ -12,11 +12,11 @@ namespace AppointmentTracking.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "dbo");
+                name: "public");
 
             migrationBuilder.CreateTable(
                 name: "Candidates",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -37,7 +37,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Instructors",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -58,7 +58,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Lessons",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -77,7 +77,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Users",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -100,7 +100,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Appointments",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -121,14 +121,14 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Appointments_Candidates_CandidateId",
                         column: x => x.CandidateId,
-                        principalSchema: "dbo",
+                        principalSchema: "public",
                         principalTable: "Candidates",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Appointments_Instructors_InstructorId",
                         column: x => x.InstructorId,
-                        principalSchema: "dbo",
+                        principalSchema: "public",
                         principalTable: "Instructors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -136,7 +136,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Vehicles",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -159,14 +159,14 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Vehicles_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
-                        principalSchema: "dbo",
+                        principalSchema: "public",
                         principalTable: "Appointments",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "VehicleDetails",
-                schema: "dbo",
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -198,7 +198,7 @@ namespace AppointmentTracking.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_VehicleDetails_Vehicles_VehicleId",
                         column: x => x.VehicleId,
-                        principalSchema: "dbo",
+                        principalSchema: "public",
                         principalTable: "Vehicles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -206,41 +206,41 @@ namespace AppointmentTracking.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_CandidateId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments",
                 column: "CandidateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_InstructorId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments",
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_VehicleId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments",
                 column: "VehicleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VehicleDetails_VehicleId",
-                schema: "dbo",
+                schema: "public",
                 table: "VehicleDetails",
                 column: "VehicleId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_AppointmentId",
-                schema: "dbo",
+                schema: "public",
                 table: "Vehicles",
                 column: "AppointmentId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Appointments_Vehicles_VehicleId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments",
                 column: "VehicleId",
-                principalSchema: "dbo",
+                principalSchema: "public",
                 principalTable: "Vehicles",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -251,46 +251,46 @@ namespace AppointmentTracking.Infrastructure.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Appointments_Candidates_CandidateId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Appointments_Instructors_InstructorId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_Appointments_Vehicles_VehicleId",
-                schema: "dbo",
+                schema: "public",
                 table: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "Lessons",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Users",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "VehicleDetails",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Candidates",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Instructors",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Vehicles",
-                schema: "dbo");
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Appointments",
-                schema: "dbo");
+                schema: "public");
         }
     }
 }
